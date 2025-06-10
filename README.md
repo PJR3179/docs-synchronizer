@@ -1,9 +1,19 @@
 # Docs as Code - Confluence
 
-Publish a folder of documentation to Confluence.
+Publish a folder or subfolder of documentation to Confluence.
 
 Create a Confluence Page for each markdown file. Each folder will create a _parent_ page to reflect
 the directory structure.
+
+This workflow is adapted for vertexinc's needs from https://github.com/marketplace/actions/docs-as-code-confluence
+
+## Things to Know
+
+- When linking to sections within your markdown files (e.g., `#overview`), use the full GitHub URL. Otherwise, these links will not work correctly after publishing to Confluence. You can manually adjust Confluence hyperlinks after publishing if needed.
+
+- Automatically published docs are not deleted from Confluence.
+
+- Confluence may restrict the width of text in auto-published tables. You may need to manually resize columns to suit your team's preferences.
 
 ## Parameters
 
@@ -15,14 +25,6 @@ the directory structure.
 | `confluence-base-url` | Your Confluence URL (with `wiki`). Example: `https://mydomain.atlassian.net/wiki` | true |
 | `space-key`           | Confluence space key to publish the documentation. Located after `spaces` in the URL. `https://mydomain.atlassian.net/wiki/spaces/<<~1234>>`. <br> Or in _Space settings_ > _Space details_ > _Key_. | true |
 | `parent-page-id`      | Page id under which the documentation will be published. Located after `pages` in the URL. `https://mydomain.atlassian.net/wiki/spaces/~1234/pages/<<1234>>/My+Parent+Page` | true |
-
-## TODO
-
-* Renaming a file
-* Moving/Removing a file
-* Not updating Confluence pages when there is no change
-* Add commit link to the new page version
-* Add markdown images with url source
 
 ## Example of workflow
 
@@ -51,9 +53,6 @@ jobs:
           space-key: ~1234
           parent-page-id: 123456789
 ```
-## Disclaimer
-
-
 
 ## Alternatives
 
