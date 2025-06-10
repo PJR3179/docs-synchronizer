@@ -1,9 +1,5 @@
 name: "Docs as Code - Confluence"
 description: "Publish the content of a folder to confluence"
-branding:
-  icon: 'book-open'
-  color: 'blue'
-author: "Bhacaz"
 inputs:
   folder:
     description: "Folder containing the documentation to publish."

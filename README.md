@@ -42,26 +42,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Sync Docs as Code - Confluence
-        uses: Bhacaz/docs-as-code-confluence@v3
+        uses: PJR3179/docs-as-code-confluence@v3
         with:
-          folder: docs
-          username: abc@xyz.com
+          folder: 'docs/information_tables'
+          username: ${{ secrets.Username}}$ #Email you want to publish from
           password: ${{ secrets.API_TOKEN }}
           confluence-base-url: https://mydomain.atlassian.net/wiki
           space-key: ~1234
           parent-page-id: 123456789
 ```
+## Disclaimer
 
-## Example of usage in a repository
 
-[Bhacaz/docs-as-code-confluence-demo](https://github.com/Bhacaz/docs-as-code-confluence-demo)
 
 ## Alternatives
 
 * [markdown-confluence/publish-action](https://github.com/markdown-confluence/publish-action)
 * [mbovo/mark2confluence](https://github.com/mbovo/mark2confluence)
-
-## Development
 
 **Test**
 
