@@ -1,5 +1,5 @@
 name: "Docs as Code - Confluence"
-description: "Publish the content of a folder to confluence"
+description: "Publish the content of a folder to confluence using FastAPI and Python"
 inputs:
   folder:
     description: "Folder containing the documentation to publish."
@@ -19,6 +19,31 @@ inputs:
   parent-page-id:
     description: "Page id under which the documentation will be published"
     required: true
+  dry-run:
+    description: "Run in dry-run mode (don't actually publish)"
+    required: false
+    default: "false"
 runs:
-  using: "node20"
-  main: "dist/index.js"
+  using: "composite"
+  steps:
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+    
+    - name: Install dependencies
+      shell: bash
+      run: |
+        pip install -r ${{ github.action_path }}/requirements.txt
+    
+    - name: Publish to Confluence
+      shell: bash
+      run: |
+        python ${{ github.action_path }}/confluence_publisher.py \
+          --folder "${{ inputs.folder }}" \
+          --username "${{ inputs.username }}" \
+          --password "${{ inputs.password }}" \
+          --confluence-base-url "${{ inputs.confluence-base-url }}" \
+          --space-key "${{ inputs.space-key }}" \
+          --parent-page-id "${{ inputs.parent-page-id }}" \
+          ${{ inputs.dry-run == 'true' && '--dry-run' || '' }}
