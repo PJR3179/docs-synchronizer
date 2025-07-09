@@ -1,76 +1,57 @@
-import os
-import logging
-from pathlib import Path
-from typing import List, Optional
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from pydantic import BaseModel
-import uvicorn
-from confluence_publisher import publish_markdown_files
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+# Create the FastAPI app
+app = FastAPI(title="My First API")
 
-app = FastAPI(
-    title="Docs as Code - Confluence API",
-    description="Publish markdown documentation to Confluence",
-    version="1.0.0"
-)
+# Define a simple data model
+class Item(BaseModel):
+    name: str
+    description: str = None
 
-class PublishRequest(BaseModel):
-    folder: str
-    username: str
-    password: str
-    confluence_base_url: str
-    space_key: str
-    parent_page_id: str
-    dry_run: Optional[bool] = False
+class MarkdownRequest(BaseModel):
+    markdown: str
 
-class PublishResponse(BaseModel):
-    success: bool
-    message: str
-    pages_published: Optional[List[str]] = None
+class MarkdownResponse(BaseModel):
+    confluence_content: str
 
+# Root endpoint
 @app.get("/")
-async def root():
-    return {"message": "Docs as Code - Confluence API"}
+def hello_world():
+    return {"message": "Hello, World!"}
 
-@app.get("/health")
-async def health_check():
-    return {"status": "healthy"}
+# Get all items
+@app.get("/items")
+def get_items():
+    return {"items": ["apple", "banana", "orange"]}
 
-@app.post("/publish", response_model=PublishResponse)
-async def publish_docs(request: PublishRequest):
-    """
-    Publish markdown files from a folder to Confluence
-    """
+# Create a new item
+@app.post("/items")
+def create_item(item: Item):
+    return {"message": f"Created item: {item.name}"}
+
+# Get a specific item
+@app.get("/items/{item_id}")
+def get_item(item_id: int):
+    return {"item_id": item_id, "name": f"Item {item_id}"}
+
+# Convert markdown to Confluence format
+@app.post("/convert", response_model=MarkdownResponse)
+def convert_markdown(request: MarkdownRequest):
+    """Convert markdown to Confluence storage format"""
     try:
-        # Validate folder exists
-        folder_path = Path(request.folder)
-        if not folder_path.exists():
-            raise HTTPException(status_code=400, detail=f"Folder {request.folder} does not exist")
+        from markdown_to_confluence.markdown_converter import MarkdownConverter
         
-        # Publish markdown files to Confluence
-        published_pages = publish_markdown_files(
-            folder=request.folder,
-            username=request.username,
-            password=request.password,
-            confluence_base_url=request.confluence_base_url,
-            space_key=request.space_key,
-            parent_page_id=request.parent_page_id,
-            dry_run=request.dry_run
-        )
+        converter = MarkdownConverter()
+        confluence_content = converter.convert(request.markdown)
         
-        return PublishResponse(
-            success=True,
-            message=f"Successfully processed {len(published_pages)} pages",
-            pages_published=published_pages
-        )
-        
+        return MarkdownResponse(confluence_content=confluence_content)
+    except ImportError:
+        return {"error": "markdown-to-confluence package not installed"}
     except Exception as e:
-        logger.error(f"Error publishing docs: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
+        return {"error": f"Conversion failed: {str(e)}"}
 
+# Run the app
 if __name__ == "__main__":
-    port = int(os.getenv("PORT", 8000))
-    uvicorn.run(app, host="0.0.0.0", port=port)
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
