@@ -13,20 +13,22 @@ jobs:
         uses: actions/checkout@v4
       
       - name: Publish README to Confluence
-        uses: your-username/markdown-to-confluence-action@v1
+        uses: PJR3179/markdown-to-confluence-action@v2
         with:
           markdown-path: 'README.md'
-          confluence-domain: 'mycompany.atlassian.net'
+          confluence-domain: 'vertexinc.atlassian.net'
           confluence-username: ${{ secrets.CONFLUENCE_USERNAME }}
           confluence-api-key: ${{ secrets.CONFLUENCE_API_KEY }}
           confluence-space: 'ENGINEERING'
           confluence-root-page: '123456789'
       
       - name: Publish entire docs directory
-        uses: your-username/markdown-to-confluence-action@v1
+        uses: PJR3179/markdown-to-confluence-action@v2
         with:
           markdown-path: 'docs/'
-          confluence-domain: 'mycompany.atlassian.net'
+          confluence-domain: 'vertexinc.atlassian.net'
           confluence-username: ${{ secrets.CONFLUENCE_USERNAME }}
           confluence-api-key: ${{ secrets.CONFLUENCE_API_KEY }}
           confluence-space: 'DOCS'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          confluence-root-page: '987654321'

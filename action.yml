@@ -1,6 +1,6 @@
 name: 'Markdown to Confluence Publisher'
 description: 'Automatically publish markdown files to Confluence using md2conf'
-author: 'Your Name'
+author: 'Philip Rubbo'
 
 inputs:
   markdown-path:
@@ -22,8 +22,8 @@ inputs:
     description: 'Root page ID for creating new pages (optional)'
     required: false
   github-token:
-    description: 'GitHub token for accessing repository (optional)'
-    required: false
+    description: 'GitHub token for accessing repositories'
+    required: true
     default: ${{ github.token }}
 
 runs:
