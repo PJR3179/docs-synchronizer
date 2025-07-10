@@ -1,0 +1,35 @@
+name: 'Markdown to Confluence Publisher'
+description: 'Automatically publish markdown files to Confluence using md2conf'
+author: 'Your Name'
+
+inputs:
+  markdown-path:
+    description: 'Path to the markdown file or directory to publish'
+    required: true
+  confluence-domain:
+    description: 'Confluence domain (e.g., mycompany.atlassian.net)'
+    required: true
+  confluence-username:
+    description: 'Confluence username/email'
+    required: true
+  confluence-api-key:
+    description: 'Confluence API key'
+    required: true
+  confluence-space:
+    description: 'Confluence space key'
+    required: true
+  confluence-root-page:
+    description: 'Root page ID for creating new pages (optional)'
+    required: false
+  github-token:
+    description: 'GitHub token for accessing repository (optional)'
+    required: false
+    default: ${{ github.token }}
+
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+
+branding:
+  icon: 'upload'
+  color: 'blue'
