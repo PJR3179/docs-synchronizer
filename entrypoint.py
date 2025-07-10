@@ -53,22 +53,31 @@ def main():
         
         if result.success:
             print(f"✅ {result.message}")
-            # Set GitHub Action output
-            print(f"::set-output name=status::success")
-            print(f"::set-output name=message::{result.message}")
+            # Set GitHub Action output (updated syntax)
+            github_output = os.getenv('GITHUB_OUTPUT')
+            if github_output:
+                with open(github_output, 'a') as fh:
+                    print(f"status=success", file=fh)
+                    print(f"message={result.message}", file=fh)
             sys.exit(0)
         else:
             print(f"❌ {result.message}")
             if result.error:
                 print(f"Error details: {result.error}")
-            print(f"::set-output name=status::failed")
-            print(f"::set-output name=message::{result.message}")
+            github_output = os.getenv('GITHUB_OUTPUT')
+            if github_output:
+                with open(github_output, 'a') as fh:
+                    print(f"status=failed", file=fh)
+                    print(f"message={result.message}", file=fh)
             sys.exit(1)
             
     except Exception as e:
         print(f"❌ Unexpected error: {str(e)}")
-        print(f"::set-output name=status::error")
-        print(f"::set-output name=message::Unexpected error: {str(e)}")
+        github_output = os.getenv('GITHUB_OUTPUT')
+        if github_output:
+            with open(github_output, 'a') as fh:
+                print(f"status=error", file=fh)
+                print(f"message=Unexpected error: {str(e)}", file=fh)
         sys.exit(1)
 
 if __name__ == "__main__":
