@@ -23,7 +23,7 @@ inputs:
     required: false
   github-token:
     description: 'GitHub token for accessing repositories'
-    required: true
+    required: false
     default: ${{ github.token }}
 
 runs:
