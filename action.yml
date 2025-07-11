@@ -27,8 +27,28 @@ inputs:
     default: ${{ github.token }}
 
 runs:
-  using: 'docker'
-  image: 'Dockerfile'
+  using: 'composite'
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+    
+    - name: Install dependencies
+      run: pip install -r ${{ github.action_path }}/requirements.txt
+      shell: bash
+    
+    - name: Run markdown to confluence publisher
+      run: python ${{ github.action_path }}/main.py
+      shell: bash
+      env:
+        INPUT_MARKDOWN_PATH: ${{ inputs.markdown-path }}
+        INPUT_CONFLUENCE_DOMAIN: ${{ inputs.confluence-domain }}
+        INPUT_CONFLUENCE_USERNAME: ${{ inputs.confluence-username }}
+        INPUT_CONFLUENCE_API_KEY: ${{ inputs.confluence-api-key }}
+        INPUT_CONFLUENCE_SPACE: ${{ inputs.confluence-space }}
+        INPUT_CONFLUENCE_ROOT_PAGE: ${{ inputs.confluence-root-page }}
+        INPUT_GITHUB_TOKEN: ${{ inputs.github-token }}
 
 branding:
   icon: 'upload'
