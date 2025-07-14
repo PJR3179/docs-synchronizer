@@ -84,8 +84,18 @@ def convert_markdown(request: MarkdownRequest):
         # Add the markdown path
         cmd.append(markdown_path)
         
+        # Debugging logs for publishing process
+        print("Starting publishing process...")
+        print(f"Command to execute: {' '.join(cmd)}")
+        print("Executing md2conf command...")
+
         # Execute the command
         result = subprocess.run(cmd, check=True, capture_output=True, text=True)
+
+        # Debugging logs for command result
+        print("Command executed successfully.")
+        print(f"Command output: {result.stdout}")
+        print(f"Command errors (if any): {result.stderr}")
         
         return MarkdownResponse(
             success=True,
