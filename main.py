@@ -44,6 +44,14 @@ def convert_markdown(request: MarkdownRequest):
         root_page = request.root_page or os.getenv("CONFLUENCE_ROOT_PAGE")
         markdown_path = request.markdown_path or os.getenv("GITHUB_MARKDOWN_FILE")
         
+        # Debugging logs for environment variables
+        print(f"Domain: {domain}")
+        print(f"Username: {'SET' if username else 'NOT SET'}")
+        print(f"API Key: {'SET' if api_key else 'NOT SET'}")
+        print(f"Space: {space}")
+        print(f"Markdown Path: {markdown_path}")
+        print(f"Root Page: {root_page}")
+        
         # Validate required parameters
         if not all([domain, username, api_key, space, markdown_path]):
             missing = []

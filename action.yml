@@ -38,6 +38,22 @@ runs:
       run: pip install -r ${{ github.action_path }}/requirements.txt
       shell: bash
     
+    - name: Debug Inputs
+      run: |
+        echo "Debugging Inputs:"
+        echo "Markdown Path: ${{ inputs.markdown-path }}"
+        echo "Confluence Domain: ${{ inputs.confluence-domain }}"
+        echo "Confluence Space: ${{ inputs.confluence-space }}"
+        echo "Confluence Root Page: ${{ inputs.confluence-root-page }}"
+      shell: bash
+    
+    - name: Validate Environment Variables
+      run: |
+        echo "Validating Environment Variables:"
+        if [ -z "${{ inputs.confluence-username }}" ]; then echo "Confluence Username is missing"; else echo "Confluence Username is set"; fi
+        if [ -z "${{ inputs.confluence-api-key }}" ]; then echo "Confluence API Key is missing"; else echo "Confluence API Key is set"; fi
+      shell: bash
+    
     - name: Run markdown to confluence publisher
       run: python ${{ github.action_path }}/main.py
       shell: bash
