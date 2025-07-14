@@ -10,13 +10,13 @@ def main():
     """GitHub Action entrypoint"""
     
     # Get inputs from environment variables (GitHub Actions sets these)
-    markdown_path = os.getenv('INPUT_MARKDOWN-PATH')
-    domain = os.getenv('INPUT_CONFLUENCE-DOMAIN')
-    username = os.getenv('INPUT_CONFLUENCE-USERNAME')
-    api_key = os.getenv('INPUT_CONFLUENCE-API-KEY')
-    space = os.getenv('INPUT_CONFLUENCE-SPACE')
-    root_page = os.getenv('INPUT_CONFLUENCE-ROOT-PAGE')
-    github_token = os.getenv('INPUT_GITHUB-TOKEN')
+    markdown_path = os.getenv('INPUT_MARKDOWN_PATH')  # Corrected variable name
+    domain = os.getenv('INPUT_CONFLUENCE_DOMAIN')
+    username = os.getenv('INPUT_CONFLUENCE_USERNAME')
+    api_key = os.getenv('INPUT_CONFLUENCE_API_KEY')
+    space = os.getenv('INPUT_CONFLUENCE_SPACE')
+    root_page = os.getenv('INPUT_CONFLUENCE_ROOT_PAGE')
+    github_token = os.getenv('INPUT_GITHUB_TOKEN')
     
     # GitHub context
     github_workspace = os.getenv('GITHUB_WORKSPACE', '/github/workspace')
