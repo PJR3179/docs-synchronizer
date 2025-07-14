@@ -65,6 +65,9 @@ def convert_markdown(request: MarkdownRequest):
                 message="Missing required parameters",
                 error=f"Missing: {', '.join(missing)}"
             )
+
+        # Debugging logs for parameters
+        print("Parameters validated successfully.")
         
         # Add required parameters
         cmd.extend(["-d", domain])
@@ -90,7 +93,10 @@ def convert_markdown(request: MarkdownRequest):
         print("Executing md2conf command...")
 
         # Execute the command
-        result = subprocess.run(cmd, check=True, capture_output=True, text=True)
+        result = subprocess.run(cmd, check=True, capture_output=True, text=True, timeout=60)
+
+        # Log endpoint call
+        print("/publish endpoint called successfully.")
 
         # Debugging logs for command result
         print("Command executed successfully.")
