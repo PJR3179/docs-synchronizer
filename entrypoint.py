@@ -80,6 +80,15 @@ def main():
                 print(f"message=Unexpected error: {str(e)}", file=fh)
         sys.exit(1)
 
+    # Start the FastAPI server in the background
+    import subprocess
+    server_process = subprocess.Popen(["python", "main.py"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    print("FastAPI server started in the background.")
+
+    # Wait for the server to be ready
+    import time
+    time.sleep(5)  # Wait for 5 seconds to ensure the server is up
+
     # Send POST request to the FastAPI server
     try:
         url = "http://0.0.0.0:8000/publish"
@@ -96,7 +105,12 @@ def main():
         response.raise_for_status()
     except requests.exceptions.RequestException as e:
         print(f"❌ Failed to send POST request: {str(e)}")
+        server_process.terminate()
         sys.exit(1)
+
+    # Terminate the server process after the request
+    server_process.terminate()
+    print("FastAPI server terminated.")
 
 if __name__ == "__main__":
     main()

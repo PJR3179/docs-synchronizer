@@ -55,7 +55,7 @@ runs:
       shell: bash
     
     - name: Run markdown to confluence publisher
-      run: python ${{ github.action_path }}/main.py
+      run: python ${{ github.action_path }}/entrypoint.py
       shell: bash
       env:
         INPUT_MARKDOWN_PATH: ${{ inputs.markdown-path }}
