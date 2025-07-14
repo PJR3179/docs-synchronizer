@@ -11,7 +11,6 @@ class MarkdownRequest(BaseModel):
     username: str = None
     api_key: str = None
     root_page: str = None
-    title: str = None  # Added title as a required field
     github_token: str = None  # For accessing private repos
     repository: str = None    # Format: owner/repo
     ref: str = "main"        # Branch, tag, or commit SHA
@@ -50,7 +49,6 @@ def convert_markdown(request: MarkdownRequest):
         space = request.space or os.getenv("CONFLUENCE_SPACE")
         root_page = request.root_page or os.getenv("CONFLUENCE_ROOT_PAGE")
         markdown_path = request.markdown_path or os.getenv("GITHUB_MARKDOWN_FILE")
-        title = request.title or os.getenv("CONFLUENCE_TITLE") or os.path.basename(markdown_path).replace(".md", "")
 
         # Debugging logs for environment variables
         print(f"Domain: {domain}")
@@ -59,17 +57,15 @@ def convert_markdown(request: MarkdownRequest):
         print(f"Space: {space}")
         print(f"Markdown Path: {markdown_path}")
         print(f"Root Page: {root_page}")
-        print(f"Title: {title}")
 
         # Validate required parameters
-        if not all([domain, username, api_key, space, markdown_path, title]):
+        if not all([domain, username, api_key, space, markdown_path]):
             missing = []
             if not domain: missing.append("domain")
             if not username: missing.append("username")
             if not api_key: missing.append("api_key")
             if not space: missing.append("space")
             if not markdown_path: missing.append("markdown_path")
-            if not title: missing.append("title")
             return MarkdownResponse(
                 success=False,
                 message="Missing required parameters",
@@ -84,7 +80,6 @@ def convert_markdown(request: MarkdownRequest):
         cmd.extend(["-u", username])
         cmd.extend(["-a", api_key])
         cmd.extend(["-s", space])
-        cmd.extend(["--title", title])
 
         # Add optional parameters
         if root_page:

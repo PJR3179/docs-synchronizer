@@ -21,9 +21,6 @@ inputs:
   confluence-root-page:
     description: 'Root page ID for creating new pages (optional)'
     required: false
-  confluence-title:
-    description: 'Title of the Confluence page to publish'
-    required: true
   github-token:
     description: 'GitHub token for accessing repositories'
     required: false
@@ -48,7 +45,6 @@ runs:
         echo "Confluence Domain: ${{ inputs.confluence-domain }}"
         echo "Confluence Space: ${{ inputs.confluence-space }}"
         echo "Confluence Root Page: ${{ inputs.confluence-root-page }}"
-        echo "Confluence Title: ${{ inputs.confluence-title }}"
       shell: bash
     
     - name: Validate Environment Variables
@@ -68,7 +64,6 @@ runs:
         INPUT_CONFLUENCE_API_KEY: ${{ inputs.confluence-api-key }}
         INPUT_CONFLUENCE_SPACE: ${{ inputs.confluence-space }}
         INPUT_CONFLUENCE_ROOT_PAGE: ${{ inputs.confluence-root-page }}
-        INPUT_CONFLUENCE_TITLE: ${{ inputs.confluence-title }}
         INPUT_GITHUB_TOKEN: ${{ inputs.github-token }}
 
 branding:

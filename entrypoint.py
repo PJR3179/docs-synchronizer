@@ -17,7 +17,6 @@ def main():
     space = os.getenv('INPUT_CONFLUENCE_SPACE')
     root_page = os.getenv('INPUT_CONFLUENCE_ROOT_PAGE')
     github_token = os.getenv('INPUT_GITHUB_TOKEN')
-    title = os.getenv('INPUT_CONFLUENCE_TITLE')
     
     # GitHub context
     github_workspace = os.getenv('GITHUB_WORKSPACE', '/github/workspace')
@@ -29,7 +28,6 @@ def main():
     print(f"📄 Markdown path: {markdown_path}")
     print(f"🏢 Confluence domain: {domain}")
     print(f"📚 Confluence space: {space}")
-    print(f"📄 Title: {title}")
     
     # Construct full path to markdown file
     full_markdown_path = os.path.join(github_workspace, markdown_path)
@@ -40,7 +38,7 @@ def main():
         sys.exit(1)
     
     # Validate required inputs
-    if not all([markdown_path, domain, username, api_key, space, title]):
+    if not all([markdown_path, domain, username, api_key, space]):
         print("❌ Error: Missing required inputs")
         sys.exit(1)
     
@@ -51,8 +49,7 @@ def main():
         username=username,
         api_key=api_key,
         space=space,
-        root_page=root_page,
-        title=title
+        root_page=root_page
     )
     
     # Call the conversion function
