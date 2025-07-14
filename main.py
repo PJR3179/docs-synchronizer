@@ -28,6 +28,12 @@ app = FastAPI(title="MD to Confluence Converter")
 def hello_world():
     return {"message": "Hello, World!"}
 
+# Add a health check endpoint
+@app.get("/health")
+def health_check():
+    print("Health check endpoint called.")
+    return {"status": "Server is running and healthy."}
+
 # Convert markdown to Confluence format
 @app.post("/publish", response_model=MarkdownResponse)
 def convert_markdown(request: MarkdownRequest):

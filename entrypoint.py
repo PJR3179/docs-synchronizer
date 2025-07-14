@@ -80,5 +80,23 @@ def main():
                 print(f"message=Unexpected error: {str(e)}", file=fh)
         sys.exit(1)
 
+    # Send POST request to the FastAPI server
+    try:
+        url = "http://0.0.0.0:8000/publish"
+        payload = {
+            "markdown_path": full_markdown_path,
+            "domain": domain,
+            "username": username,
+            "api_key": api_key,
+            "space": space,
+            "root_page": root_page
+        }
+        response = requests.post(url, json=payload)
+        print(f"POST request sent to {url}. Response: {response.status_code} - {response.text}")
+        response.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Failed to send POST request: {str(e)}")
+        sys.exit(1)
+
 if __name__ == "__main__":
     main()
