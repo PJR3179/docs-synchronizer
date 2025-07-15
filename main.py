@@ -89,7 +89,14 @@ def convert_markdown(request: MarkdownRequest):
         cmd.extend(["--keep-hierarchy"])  # Maintain directory structure
         cmd.extend(["--render-mermaid"])  # Render Mermaid diagrams
         cmd.extend(["--heading-anchors"])  # Add GitHub-style anchors
-        
+
+        # Add API URL to ensure correct endpoint
+        api_url = f"https://{domain}/rest/api/content"
+        cmd.extend(["--api-url", api_url])
+
+        # Debugging logs for API URL
+        print(f"API URL: {api_url}")
+
         # Add the markdown path
         cmd.append(markdown_path)
         
@@ -99,7 +106,25 @@ def convert_markdown(request: MarkdownRequest):
         print("Executing md2conf command...")
 
         # Execute the command
-        result = subprocess.run(cmd, check=True, capture_output=True, text=True, timeout=60)
+        try:
+            result = subprocess.run(cmd, check=True, capture_output=True, text=True, timeout=60)
+        except subprocess.CalledProcessError as e:
+            print("❌ md2conf command failed.")
+            print(f"Exit code: {e.returncode}")
+            print(f"Error output: {e.stderr}")
+            return MarkdownResponse(
+                success=False,
+                message="md2conf command failed.",
+                error=f"Exit code: {e.returncode}, Error: {e.stderr}",
+            )
+        except Exception as e:
+            print("❌ Unexpected error during md2conf execution.")
+            print(f"Error: {str(e)}")
+            return MarkdownResponse(
+                success=False,
+                message="Unexpected error occurred.",
+                error=str(e),
+            )
 
         # Log endpoint call
         print("/publish endpoint called successfully.")
@@ -114,12 +139,6 @@ def convert_markdown(request: MarkdownRequest):
             message=f"Successfully published {markdown_path} to Confluence",
         )
         
-    except subprocess.CalledProcessError as e:
-        return MarkdownResponse(
-            success=False,
-            message="md2conf command failed",
-            error=f"Command failed with exit code {e.returncode}: {e.stderr}"
-        )
     except Exception as e:
         return MarkdownResponse(
             success=False,
