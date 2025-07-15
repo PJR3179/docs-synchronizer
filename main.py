@@ -90,13 +90,6 @@ def convert_markdown(request: MarkdownRequest):
         cmd.extend(["--render-mermaid"])  # Render Mermaid diagrams
         cmd.extend(["--heading-anchors"])  # Add GitHub-style anchors
 
-        # Update API URL to use the correct base path
-        api_url = f"https://{domain}/wiki/rest/api/"
-        cmd.extend(["--api-url", api_url])
-
-        # Debugging logs for API URL
-        print(f"Updated API URL: {api_url}")
-
         # Add the markdown path
         cmd.append(markdown_path)
         
