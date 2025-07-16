@@ -55,7 +55,11 @@ runs:
       shell: bash
 
     - name: Install mermaid-cli
-      run: npm install -g @mermaid-js/mermaid-cli && echo "alias mmdc='mmdc --no-sandbox'" >> ~/.bashrc && source ~/.bashrc
+      run: |
+        npm install -g @mermaid-js/mermaid-cli
+        echo "alias mmdc='mmdc --no-sandbox'" >> ~/.bashrc
+        source ~/.bashrc
+        echo "Verifying mmdc alias and version:" && mmdc --version
       shell: bash
     
     - name: Install dependencies
@@ -76,6 +80,11 @@ runs:
         echo "Validating Environment Variables:"
         if [ -z "${{ inputs.confluence-username }}" ]; then echo "Confluence Username is missing"; else echo "Confluence Username is set"; fi
         if [ -z "${{ inputs.confluence-api-key }}" ]; then echo "Confluence API Key is missing"; else echo "Confluence API Key is set"; fi
+      shell: bash
+    
+    - name: Debug AppArmor Status
+      run: |
+        echo "Checking AppArmor status:" && sudo aa-status || echo "AppArmor is not installed or disabled."
       shell: bash
     
     - name: Run markdown to confluence publisher
