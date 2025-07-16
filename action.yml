@@ -30,13 +30,10 @@ runs:
   using: 'composite'
   steps:
 
-    - name: Disable App Armor
+    - name: Disable Chromium AppArmor Profile
       run: |
-        sudo systemctl stop apparmor
-        sudo systemctl disable apparmor
-        sudo sed -i 's/GRUB_CMDLINE_LINUX=""/GRUB_CMDLINE_LINUX="apparmor=0"/' /etc/default/grub
-        sudo update-grub
-        sudo systemctl restart apparmor
+        sudo ln -s /etc/apparmor.d/usr.bin.chromium-browser /etc/apparmor.d/disable/
+        sudo apparmor_parser -R /etc/apparmor.d/usr.bin.chromium-browser
       shell: bash
 
     - name: Set up Python
