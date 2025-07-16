@@ -33,6 +33,15 @@ runs:
       uses: actions/setup-python@v4
       with:
         python-version: '3.9'
+
+    - name: Install Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'
+
+    - name: Install mermaid-cli
+      run: npm install -g @mermaid-js/mermaid-cli
+      shell: bash
     
     - name: Install dependencies
       run: pip install -r ${{ github.action_path }}/requirements.txt
