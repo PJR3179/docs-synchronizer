@@ -89,6 +89,7 @@ def convert_markdown(request: MarkdownRequest):
         cmd.extend(["--keep-hierarchy"])  # Maintain directory structure
         cmd.extend(["--render-mermaid"])  # Render Mermaid diagrams
         cmd.extend(["--heading-anchors"])  # Add GitHub-style anchors
+        cmd.extend(["--no-sandbox"])  # Disable sandboxing for Puppeteer
 
         # Add the markdown path
         cmd.append(markdown_path)
