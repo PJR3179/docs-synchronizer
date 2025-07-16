@@ -46,7 +46,7 @@ runs:
       shell: bash
 
     - name: Install mermaid-cli
-      run: npm install -g @mermaid-js/mermaid-cli && echo "alias mmdc='mmdc --no-sandbox'" >> ~/.bashrc && source ~/.bashrc
+      run: npm install -g @mermaid-js/mermaid-cli
       shell: bash
     
     - name: Install dependencies
