@@ -73,12 +73,6 @@ runs:
         if [ -z "${{ inputs.confluence-username }}" ]; then echo "Confluence Username is missing"; else echo "Confluence Username is set"; fi
         if [ -z "${{ inputs.confluence-api-key }}" ]; then echo "Confluence API Key is missing"; else echo "Confluence API Key is set"; fi
       shell: bash
-
-    - name: Disable Chromium AppArmor Profile
-      run: |
-        sudo ln -s /etc/apparmor.d/usr.bin.chromium-browser /etc/apparmor.d/disable/
-        sudo apparmor_parser -R /etc/apparmor.d/usr.bin.chromium-browser
-      shell: bash
     
     - name: Debug AppArmor Status
       run: |
