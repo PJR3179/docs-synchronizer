@@ -30,6 +30,12 @@ runs:
   using: 'composite'
   steps:
 
+    - name: Install AppArmor Utils
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y apparmor-utils
+      shell: bash
+
     - name: Disable App Armor
       run: |
         sudo systemctl stop apparmor
