@@ -29,6 +29,13 @@ inputs:
 runs:
   using: 'composite'
   steps:
+
+    - name: Disable App Armor
+      run: |
+        sudo systemctl stop apparmor
+        sudo systemctl disable apparmor
+      shell: bash
+
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
