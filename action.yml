@@ -74,11 +74,6 @@ runs:
         if [ -z "${{ inputs.confluence-api-key }}" ]; then echo "Confluence API Key is missing"; else echo "Confluence API Key is set"; fi
       shell: bash
     
-    - name: Debug AppArmor Status
-      run: |
-        echo "Checking AppArmor status:" && sudo aa-status || echo "AppArmor is not installed or disabled."
-      shell: bash
-    
     - name: Run markdown to confluence publisher
       run: python ${{ github.action_path }}/entrypoint.py
       shell: bash

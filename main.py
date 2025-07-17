@@ -93,6 +93,13 @@ def convert_markdown(request: MarkdownRequest):
         # Add the markdown path
         cmd.append(markdown_path)
         
+        # Check if the markdown path is a directory
+        if os.path.isdir(markdown_path):
+            print(f"📂 Detected directory at {markdown_path}. Applying -r option.")
+            cmd.extend(["-r", markdown_path])
+        else:
+            print(f"📄 Detected file at {markdown_path}. Proceeding without -r option.")
+
         # Debugging logs for publishing process
         print("Starting publishing process...")
         print(f"Command to execute: {' '.join(cmd)}")
