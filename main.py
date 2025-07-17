@@ -91,18 +91,18 @@ def convert_markdown(request: MarkdownRequest):
         
         # Check if the markdown path is a directory
         if os.path.isdir(markdown_path):
-            print(f"📂 Detected directory at {markdown_path}. Applying -r option with root page ID.")
+            print(f"📄 Detected directory at {markdown_path}. Proceeding without -r option.")
+        else:
+            print(f"📂 Detected file at {markdown_path}. Applying -r option with root page ID.")
             if root_page:
                 cmd.extend(["-r", root_page])
             else:
-                print("❌ Error: Root page ID is required for directory synchronization.")
+                print("❌ Error: Root page ID is required for file synchronization.")
                 return MarkdownResponse(
                     success=False,
-                    message="Root page ID is missing for directory synchronization.",
-                    error="Root page ID is required when using a directory.",
+                    message="Root page ID is missing for file synchronization.",
+                    error="Root page ID is required when using a file.",
                 )
-        else:
-            print(f"📄 Detected file at {markdown_path}. Proceeding without -r option.")
 
         # Debugging logs for publishing process
         print("Starting publishing process...")
