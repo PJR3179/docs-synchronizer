@@ -102,9 +102,6 @@ def convert_markdown(request: MarkdownRequest):
         try:
             result = subprocess.run(cmd, check=True, capture_output=True, text=True, timeout=60)
         except subprocess.CalledProcessError as e:
-            print("❌ md2conf command failed.")
-            print(f"Exit code: {e.returncode}")
-            print(f"Error output: {e.stderr}")
             return MarkdownResponse(
                 success=False,
                 message="md2conf command failed.",
