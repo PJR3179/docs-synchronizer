@@ -80,6 +80,10 @@ def convert_markdown(request: MarkdownRequest):
         cmd.extend(["-u", username])
         cmd.extend(["-a", api_key])
         cmd.extend(["-s", space])
+
+        # Add optional parameters
+        if root_page:
+            cmd.extend(["-r", root_page])
         
         # Add additional options for better integration
         cmd.extend(["--keep-hierarchy"])  # Maintain directory structure
@@ -89,21 +93,6 @@ def convert_markdown(request: MarkdownRequest):
         # Add the markdown path
         cmd.append(markdown_path)
         
-        # Check if the markdown path is a directory
-        if os.path.isdir(markdown_path):
-            print(f"📄 Detected directory at {markdown_path}. Proceeding without -r option.")
-        else:
-            print(f"📂 Detected file at {markdown_path}. Applying -r option with root page ID.")
-            if root_page:
-                cmd.extend(["-r", root_page])
-            else:
-                print("❌ Error: Root page ID is required for file synchronization.")
-                return MarkdownResponse(
-                    success=False,
-                    message="Root page ID is missing for file synchronization.",
-                    error="Root page ID is required when using a file.",
-                )
-
         # Debugging logs for publishing process
         print("Starting publishing process...")
         print(f"Command to execute: {' '.join(cmd)}")
