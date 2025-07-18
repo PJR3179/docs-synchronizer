@@ -1,10 +1,13 @@
 on:
   workflow_call:
     inputs:
-      confluence-page:
+      markdown-path:
         required: true
         type: string
-      github-markdown-url:
+      confluence-space:
+        required: true
+        type: string
+      confluence-root-page:
         required: true
         type: string
 
@@ -12,8 +15,15 @@ jobs:
   process:
     runs-on: ubuntu-latest
     steps:
-      - name: Process confluence page and markdown
-        run: |
-          echo "Confluence Page: ${{ inputs.confluence-page }}"
-          echo "Markdown URL: ${{ inputs.github-markdown-url }}"
-          # your logic here
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Publish to Confluence
+        uses: vertexinc/prodeng-md-to-confluence@main
+        with:
+          markdown-path: ${{ inputs.markdown-path }}
+          confluence-domain: 'vertexinc.atlassian.net'
+          confluence-username: ${{ secrets.ATLASSIAN_USERNAME }}
+          confluence-api-key: ${{ secrets.ATLASSIAN_TOKEN }}
+          confluence-space: ${{ inputs.confluence-space }}
+          confluence-root-page: ${{ inputs.confluence-root-page }}

@@ -1,0 +1,91 @@
+name: 'Markdown to Confluence Publisher'
+description: 'Automatically publish markdown files to Confluence using md2conf'
+author: 'Philip Rubbo'
+
+inputs:
+  markdown-path:
+    description: 'Path to the markdown file or directory to publish'
+    required: true
+  confluence-domain:
+    description: 'Confluence domain (e.g., mycompany.atlassian.net)'
+    required: true
+  confluence-username:
+    description: 'Confluence username/email'
+    required: true
+  confluence-api-key:
+    description: 'Confluence API key'
+    required: true
+  confluence-space:
+    description: 'Confluence space key'
+    required: true
+  confluence-root-page:
+    description: 'Root page ID for creating new pages (optional)'
+    required: false
+  github-token:
+    description: 'GitHub token for accessing repositories'
+    required: false
+    default: ${{ github.token }}
+
+runs:
+  using: 'composite'
+  steps:
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: Install Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20'
+
+    - name: Install Puppeteer Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libnss3 libxss1 libasound2 fonts-liberation libatk1.0-0 libcairo2 libcups2 libdbus-1-3 libgdk-pixbuf-2.0-0 libpango-1.0-0 libxcomposite1 libxrandr2 libgbm-dev libgtk-3-0
+      shell: bash
+
+    - name: Install mermaid-cli
+      run: |
+        npm install -g @mermaid-js/mermaid-cli
+        echo "alias mmdc='mmdc --no-sandbox'" >> ~/.bashrc
+        source ~/.bashrc
+        echo "Verifying mmdc alias and version:" && mmdc --version
+      shell: bash
+    
+    - name: Install dependencies
+      run: pip install -r ${{ github.action_path }}/requirements.txt
+      shell: bash
+    
+    - name: Debug Inputs
+      run: |
+        echo "Debugging Inputs:"
+        echo "Markdown Path: ${{ inputs.markdown-path }}"
+        echo "Confluence Domain: ${{ inputs.confluence-domain }}"
+        echo "Confluence Space: ${{ inputs.confluence-space }}"
+        echo "Confluence Root Page: ${{ inputs.confluence-root-page }}"
+      shell: bash
+    
+    - name: Validate Environment Variables
+      run: |
+        echo "Validating Environment Variables:"
+        if [ -z "${{ inputs.confluence-username }}" ]; then echo "Confluence Username is missing"; else echo "Confluence Username is set"; fi
+        if [ -z "${{ inputs.confluence-api-key }}" ]; then echo "Confluence API Key is missing"; else echo "Confluence API Key is set"; fi
+      shell: bash
+    
+    - name: Run markdown to confluence publisher
+      run: python ${{ github.action_path }}/entrypoint.py
+      shell: bash
+      env:
+        INPUT_MARKDOWN_PATH: ${{ inputs.markdown-path }}
+        INPUT_CONFLUENCE_DOMAIN: ${{ inputs.confluence-domain }}
+        INPUT_CONFLUENCE_USERNAME: ${{ inputs.confluence-username }}
+        INPUT_CONFLUENCE_API_KEY: ${{ inputs.confluence-api-key }}
+        INPUT_CONFLUENCE_SPACE: ${{ inputs.confluence-space }}
+        INPUT_CONFLUENCE_ROOT_PAGE: ${{ inputs.confluence-root-page }}
+        INPUT_GITHUB_TOKEN: ${{ inputs.github-token }}
+
+branding:
+  icon: 'upload'
+  color: 'blue'

@@ -1,0 +1,21 @@
+{
+    "folders": [
+        {
+            "name": "WSL Project",
+            "uri": "vscode-remote://wsl+ubuntu/home/philip.rubbo/prodeng-md-to-confluence-2"
+        }
+    ],
+    "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "python.defaultInterpreterPath": "./venv/bin/python",
+        "python.terminal.activateEnvironment": true
+    },
+    "extensions": {
+        "recommendations": [
+            "ms-python.python",
+            "ms-vscode-remote.remote-wsl",
+            "ms-python.black-formatter",
+            "ms-python.isort"
+        ]
+    }
+}

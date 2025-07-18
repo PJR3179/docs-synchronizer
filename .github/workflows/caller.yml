@@ -20,7 +20,8 @@ jobs:
     strategy:
       matrix: ${{ fromJson(needs.generate-matrix.outputs.matrix).include }}
       max-parallel: 2
-    uses: owner/repo/.github/workflows/shared.yml@main
+    uses: ./.github/workflows/shared.yml
     with:
-      confluence-page: ${{ matrix.confluence-page }}
-      github-markdown-url: ${{ matrix.github-markdown-url }}
+      markdown-path: ${{ matrix.markdown-path }}
+      confluence-space: ${{ matrix.confluence-space }}
+      confluence-root-page: ${{ matrix.confluence-root-page }}
