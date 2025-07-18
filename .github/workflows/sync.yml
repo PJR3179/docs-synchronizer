@@ -1,0 +1,31 @@
+---
+name: publish-to-confluence
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'docs/**'
+  workflow_dispatch:
+
+jobs:
+  publish-docs:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Install Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Publish Service Catalogue
+        uses: vertexinc/prodeng-md-to-confluence@main
+        with:
+          markdown-path: 'docs/SERVICECATALOGUE.md'
+          confluence-domain: 'vertexinc.atlassian.net'
+          confluence-username: ${{ secrets.ATLASSIAN_USERNAME }}
+          confluence-api-key: ${{ secrets.ATLASSIAN_TOKEN }}
+          confluence-space: 'PRE'
+          confluence-root-page: '5685346535'
