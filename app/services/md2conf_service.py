@@ -77,7 +77,7 @@ class MD2ConfService:
     
     def build_md2conf_command(self, params: Dict[str, str]) -> List[str]:
         """Build the md2conf command with all necessary parameters."""
-        cmd = ["python", "-m", "md2conf"]
+        cmd = ["python3", "-m", "md2conf"]
         
         # Add required parameters
         cmd.extend(["-d", params["domain"]])

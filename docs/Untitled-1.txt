@@ -1,5 +1,5 @@
-# Linux curl command
-curl -X POST "http://localhost:8001/publish" \
+# Linux curl command to test the Markdown to Confluence API
+curl -X POST "http://localhost:8000/publish" \
   -H "Content-Type: application/json" \
   -d '{
     "markdown_path": "docs/simple-test.md",
@@ -10,14 +10,8 @@ curl -X POST "http://localhost:8001/publish" \
     "root_page": "5685346535"
   }'
 
-# Or using environment variables (Linux)
-curl -X POST "http://localhost:8001/publish" \
-  -H "Content-Type: application/json" \
-  -d "{
-    \"markdown_path\": \"docs/simple-test.md\",
-    \"domain\": \"${CONFLUENCE_DOMAIN}\",
-    \"username\": \"${CONFLUENCE_USERNAME}\",
-    \"api_key\": \"${CONFLUENCE_API_KEY}\",
-    \"space\": \"${CONFLUENCE_SPACE}\",
-    \"root_page\": \"${CONFLUENCE_ROOT_PAGE}\"
-  }"
+# Alternative: Test just the health endpoint first
+curl -X GET "http://localhost:8000/health"
+
+# Alternative: Test the root endpoint
+curl -X GET "http://localhost:8000/"
