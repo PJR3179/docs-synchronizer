@@ -1,0 +1,8 @@
+{
+  "include": [
+    { "confluence-page": "repo1", "github-markdown-url": "https://github.com/vertexinc/vitr-testing-vat-compliance/blob/master/README.md" },
+    { "confluence-page": "repo2", "github-markdown-url": "url2.md" },
+    { "confluence-page": "repo3", "github-markdown-url": "url3.md" },
+    { "confluence-page": "repo4", "github-markdown-url": "url4.md" }
+  ]
+}

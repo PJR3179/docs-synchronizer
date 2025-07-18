@@ -1,0 +1,26 @@
+on:
+  workflow_dispatch:
+
+jobs:
+  generate-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Read matrix JSON
+        id: set-matrix
+        run: |
+          MATRIX=$(cat matrix.json)
+          echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
+
+  call-shared:
+    needs: generate-matrix
+    strategy:
+      matrix: ${{ fromJson(needs.generate-matrix.outputs.matrix).include }}
+      max-parallel: 2
+    uses: owner/repo/.github/workflows/shared.yml@main
+    with:
+      confluence-page: ${{ matrix.confluence-page }}
+      github-markdown-url: ${{ matrix.github-markdown-url }}

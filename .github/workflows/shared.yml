@@ -1,0 +1,19 @@
+on:
+  workflow_call:
+    inputs:
+      confluence-page:
+        required: true
+        type: string
+      github-markdown-url:
+        required: true
+        type: string
+
+jobs:
+  process:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Process confluence page and markdown
+        run: |
+          echo "Confluence Page: ${{ inputs.confluence-page }}"
+          echo "Markdown URL: ${{ inputs.github-markdown-url }}"
+          # your logic here
