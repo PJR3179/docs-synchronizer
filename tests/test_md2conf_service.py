@@ -31,9 +31,16 @@ class TestMD2ConfService:
         assert params["space"] == "TEST"
         assert params["markdown_path"] == "/path/to/file.md"
     
+    @patch.dict('os.environ', {}, clear=True)  # Clear environment variables
     def test_validate_required_parameters_missing(self):
         """Test parameter validation with missing required fields."""
-        incomplete_request = MarkdownRequest(markdown_path="/path/to/file.md")
+        incomplete_request = MarkdownRequest(
+            markdown_path="/path/to/file.md",
+            domain=None,  # Missing required field
+            username=None,  # Missing required field
+            api_key=None,  # Missing required field
+            space=None  # Missing required field
+        )
         
         with pytest.raises(ValueError, match="Missing required parameters"):
             self.service.validate_required_parameters(incomplete_request)
@@ -51,7 +58,7 @@ class TestMD2ConfService:
         
         cmd = self.service.build_md2conf_command(params)
         
-        assert cmd[0:3] == ["python", "-m", "md2conf"]
+        assert cmd[0:3] == ["python3", "-m", "md2conf"]
         assert "-d" in cmd and "example.atlassian.net" in cmd
         assert "-u" in cmd and "user@example.com" in cmd
         assert "-a" in cmd and "api_key_123" in cmd
