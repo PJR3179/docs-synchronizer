@@ -156,6 +156,19 @@ curl -X POST "http://localhost:8000/publish" \
   }'
 ```
 
+```bash
+curl -X POST "http://localhost:8000/publish" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "markdown_path": "docs/mermaid-test.md",
+    "domain": "'$CONFLUENCE_DOMAIN'",
+    "username": "'$CONFLUENCE_USERNAME'",
+    "api_key": "'$CONFLUENCE_API_KEY'",
+    "space": "'$CONFLUENCE_SPACE'",
+    "root_page": "'$CONFLUENCE_ROOT_PAGE'"
+  }'
+```
+
 ### GitHub Action Usage
 
 This service can also be used as a GitHub Action. See `action.yml` for configuration details.
@@ -195,46 +208,6 @@ Run the unit tests:
 source venv/bin/activate
 pip install pytest pytest-mock  # If not already installed
 python -m pytest tests/ -v
-```
-
-## 🚀 Deployment Options
-
-### Docker Deployment (Recommended for Production)
-
-#### Using Docker Compose
-
-1. **Create environment file:**
-
-```bash
-cp .env.example .env
-# Edit .env with your credentials
-```
-
-2. **Start the service:**
-
-```bash
-docker-compose up -d
-```
-
-3. **Check logs:**
-
-```bash
-docker-compose logs -f
-```
-
-#### Using Docker directly
-
-```bash
-# Build the image
-docker build -t md2conf-api .
-
-# Run the container
-docker run -d \
-  --name md2conf-api \
-  -p 8000:8000 \
-  --env-file .env \
-  -v $(pwd)/docs:/app/docs:ro \
-  md2conf-api
 ```
 
 ### Platform-Specific Setup
@@ -371,20 +344,6 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### Docker Troubleshooting
-
-```bash
-# Check container logs
-docker-compose logs md2conf-api
-
-# Restart service
-docker-compose restart
-
-# Rebuild if needed
-docker-compose down
-docker-compose build --no-cache
-docker-compose up -d
-```
 
 ### Monitoring
 
@@ -415,8 +374,6 @@ sudo journalctl -u md2conf-api -f
 - Use HTTPS in production with proper SSL certificates
 - Consider implementing authentication for the API endpoints
 - Regularly update dependencies to patch security vulnerabilities
-
-
 
 ## 🆘 Support
 
