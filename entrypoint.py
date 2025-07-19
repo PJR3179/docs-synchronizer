@@ -31,7 +31,7 @@ def main():
     print(f"📚 Confluence space: {space}")
     
     # Construct full path to markdown file
-    full_markdown_path = os.path.join(github_workspace, markdown_path)
+    full_markdown_path = os.path.join(github_workspace, markdown_path) # type: ignore
     
     # Validate file exists
     if not os.path.exists(full_markdown_path):
