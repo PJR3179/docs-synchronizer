@@ -23,6 +23,8 @@ jobs:
         with:
           repository: ${{ inputs.markdown-repo }}
           ref: main
+          token: ${{ secrets.ORG_LEVEL_ACTION_PAT }}
+          path: markdown-repo
 
       - name: Set up Python
         uses: actions/setup-python@v5
