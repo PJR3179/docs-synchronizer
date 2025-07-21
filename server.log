@@ -1,0 +1,27 @@
+INFO:     Started server process [67396]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+Domain: vertexinc.atlassian.net
+Username: SET
+API Key: SET
+Space: PRE
+Markdown Path: docs/mermaid-test.md
+Root Page: 5687837271
+Parameters validated successfully.
+Starting publishing process...
+Command to execute: python3 -m md2conf -d vertexinc.atlassian.net -u Philip.Rubbo@vertexinc.com -a ATATT3xFfGF0o8WAOtnsaVL14d-ILdUYarMWRZ-rrJdejsVUVfwW0odeH47bZcu6TMszMn4jbYnJNOg9YWSBMnfM9n2gH6fHdsV6kpk8XHGE6KiOZkdQzBhKIJE7igORaPtMI5kHh-fBpoR7u0bxbT93rhmghJff8gZaXDglRTK_KaH1-MI76CM=7415EA16 -s PRE -r 5687837271 --keep-hierarchy --render-mermaid --heading-anchors docs/mermaid-test.md
+Executing md2conf command...
+Updated PATH for Node.js/npm: /home/philiprubbo/.npm-global/bin:/home/philiprubbo/code/prodeng-md-to-confluence/venv/bin:/home/philiprubbo/.vscode-server/bin/7adae6a56e34cb64d08899664b814cf620465925/bin/remote-cli:/home/philiprubb...
+/publish endpoint called successfully.
+Command executed successfully.
+Command output: 
+Command errors (if any): 2025-07-21 11:14:26,477 - INFO - process_page [115] - Processing page: /home/philiprubbo/code/prodeng-md-to-confluence/docs/mermaid-test.md
+2025-07-21 11:14:26,478 - INFO - _index_file [225] - Indexing file: /home/philiprubbo/code/prodeng-md-to-confluence/docs/mermaid-test.md
+2025-07-21 11:14:29,440 - INFO - upload_attachment [684] - Uploading raw data: embedded_349321433c1caf33207a0223b17a9355.png
+2025-07-21 11:14:30,159 - INFO - _update_attachment [738] - Updating attachment: att5694457636
+2025-07-21 11:14:30,385 - INFO - page_exists [920] - Checking if page exists with title: Sample Test Document
+2025-07-21 11:14:30,456 - INFO - _update_page [142] - Document title of /home/philiprubbo/code/prodeng-md-to-confluence/docs/mermaid-test.md conflicts with Confluence page title of 5692621065
+2025-07-21 11:14:30,548 - INFO - update_page [831] - Updating page: 5687837271
+
+INFO:     127.0.0.1:46156 - "POST /publish HTTP/1.1" 200 OK
