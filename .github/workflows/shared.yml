@@ -44,7 +44,9 @@ jobs:
 
       - name: Start FastAPI server
         run: |
-          nohup uvicorn main-repo/main:app --host 0.0.0.0 --port 8000 --log-level warning &
+          cd main-repo
+          nohup uvicorn main:app --host 0.0.0.0 --port 8000 --log-level warning &
+          cd ..
           sleep 10
       
       - name: Publish via API
