@@ -26,3 +26,4 @@ jobs:
       markdown-repo: ${{ matrix.markdown-repo }}
       confluence-space: ${{ matrix.confluence-space }}
       confluence-root-page: ${{ matrix.confluence-root-page }}
+    secrets: inherit
