@@ -1,8 +1,9 @@
 {
   "include": [
     { 
-      "markdown-path": "https://github.com/vertexinc/prodeng-viper-dev/blob/main/README.md",
-      "confluence-space": "PRE", 
+      "markdown-path": "README.md",
+      "markdown-repo": "vertexinc/prodeng-viper-dev",
+      "confluence-space": "PRE",
       "confluence-root-page": "5685346535" 
     }
   ]
