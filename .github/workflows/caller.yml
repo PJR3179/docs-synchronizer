@@ -12,7 +12,7 @@ jobs:
       - name: Read matrix JSON
         id: set-matrix
         run: |
-          MATRIX=$(cat matrix.json)
+          MATRIX=$(jq -c . < matrix.json)
           echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
 
   call-shared:
