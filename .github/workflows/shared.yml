@@ -4,6 +4,9 @@ on:
       markdown-path:
         required: true
         type: string
+      markdown-repo:
+        required: true
+        type: string
       confluence-space:
         required: true
         type: string
@@ -15,15 +18,36 @@ jobs:
   process:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout markdown repo
         uses: actions/checkout@v4
-      
-      - name: Publish to Confluence
-        uses: vertexinc/prodeng-md-to-confluence@main
         with:
-          markdown-path: ${{ inputs.markdown-path }}
-          confluence-domain: 'vertexinc.atlassian.net'
-          confluence-username: ${{ secrets.ATLASSIAN_USERNAME }}
-          confluence-api-key: ${{ secrets.ATLASSIAN_TOKEN }}
-          confluence-space: ${{ inputs.confluence-space }}
-          confluence-root-page: ${{ inputs.confluence-root-page }}
+          repository: ${{ inputs.markdown-repo }}
+          ref: main
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Start FastAPI server
+        run: |
+          nohup uvicorn main:app --host 0.0.0.0 --port 8000 --log-level warning &
+          sleep 10
+      
+      - name: Publish via API
+        run: |
+          curl -X POST "http://localhost:8000/publish" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "markdown_path": "${{ inputs.markdown-path }}",
+              "domain": "vertexinc.atlassian.net",
+              "username": "${{ secrets.ATLASSIAN_USERNAME }}",
+              "api_key": "${{ secrets.ATLASSIAN_TOKEN }}",
+              "space": "${{ inputs.confluence-space }}",
+              "root_page": "${{ inputs.confluence-root-page }}"
+            }'
