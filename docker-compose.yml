@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  md2conf-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: md2conf-api
+    volumes:
+      # Mount local markdown files for processing
+      - ./docs:/app/docs
+      # Uncomment to use local .env file
+      # - ./.env:/app/.env
+    ports:
+      - "8000:8000"
+    environment:
+      # Set environment variables here or use .env file
+      - DEBUG=false
+      # Confluence settings (can be overridden in requests)
+      # - CONFLUENCE_DOMAIN=https://your-domain.atlassian.net
+      # - CONFLUENCE_USERNAME=your-username
+      # - CONFLUENCE_API_KEY=your-api-key
+      # - CONFLUENCE_SPACE=SPACE
+      # - CONFLUENCE_ROOT_PAGE=123456
+    restart: unless-stopped
+    # Add healthcheck to ensure the service is running properly
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
