@@ -19,8 +19,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      - name: Build md2conf-api image
-        run: docker build -t md2conf-api:latest .
+      - name: Log in to Artifactory Docker Registry
+        run: echo "${{ secrets.AF_DOCKER_PASS }}" | docker login docker.binrepo.vtxdev.net -u "${{ secrets.AF_DOCKER_USER }}" --password-stdin
+
+      - name: Pull md2conf-api image
+        run: docker pull docker.binrepo.vtxdev.net/prodeng-markdown-to-confluence/md2conf-api:latest
 
       - name: Prepare dependencies using Docker
         run: |
@@ -34,7 +37,7 @@ jobs:
             -e GITHUB_TOKEN="${{ secrets.GH_API_PAT }}" \
             -e REPOSITORY="${{ inputs.markdown-repo }}" \
             -e REF="main" \
-            md2conf-api:latest
+            docker.binrepo.vtxdev.net/prodeng-markdown-to-confluence/md2conf-api:latest
 
       - name: Start FastAPI server
         run: |
