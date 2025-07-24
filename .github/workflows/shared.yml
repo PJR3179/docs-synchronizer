@@ -31,7 +31,7 @@ jobs:
             -e GITHUB_TOKEN="${{ secrets.GH_API_PAT }}" \
             -e REPOSITORY="${{ inputs.markdown-repo }}" \
             -e REF="main" \
-            md2conf-api@sha256:a1ad72e60880
+            md2conf-api:latest
 
       - name: Start FastAPI server
         run: |
