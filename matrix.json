@@ -1,8 +1,8 @@
 {
   "include": [
     { 
-      "markdown-path": "SERVICECATALOGUE.md",
-      "markdown-repo": "vertexinc/prodeng-viper-dev/docs/Service_Catalogue_Docs/",
+      "markdown-path": "docs/SETUP.md",
+      "markdown-repo": "vertexinc/prodeng-viper-dev/",
       "confluence-space": "PRE",
       "confluence-root-page": "5687837271" 
     }
