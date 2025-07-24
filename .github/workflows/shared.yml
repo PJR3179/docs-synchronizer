@@ -19,8 +19,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      - name: Log in to Artifactory Docker Registry
-        run: echo "${{ secrets.AF_DOCKER_PASS }}" | docker login docker.binrepo.vtxdev.net -u "${{ secrets.AF_DOCKER_USER }}" --password-stdin
+      - name: Artifactory Login
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.AF_DOCKER_HOST }}
+          username: ${{ secrets.AF_DOCKER_USER }}
+          password: ${{ secrets.AF_DOCKER_PASS }}
 
       - name: Pull md2conf-api image
         run: docker pull docker.binrepo.vtxdev.net/prodeng-markdown-to-confluence/md2conf-api:latest
