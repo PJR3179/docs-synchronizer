@@ -29,10 +29,20 @@ jobs:
       - name: Pull md2conf-api image
         run: docker pull docker.binrepo.vtxdev.net/prodeng-markdown-to-confluence/md2conf-api:latest
 
-      - name: Start FastAPI server
+      - name: Prepare dependencies using Docker
         run: |
-          nohup uvicorn main:app --host 0.0.0.0 --port 8000 --log-level warning &
-          sleep 10
+          docker run --rm -p 8000:8000 \
+            -e MARKDOWN_PATH="${{ inputs.markdown-path }}" \
+            -e DOMAIN="vertexinc.atlassian.net" \
+            -e SPACE="${{ inputs.confluence-space }}" \
+            -e USERNAME="${{ secrets.ATLASSIAN_USERNAME }}" \
+            -e API_KEY="${{ secrets.ATLASSIAN_TOKEN }}" \
+            -e ROOT_PAGE="${{ inputs.confluence-root-page }}" \
+            -e GITHUB_TOKEN="${{ secrets.GH_API_PAT }}" \
+            -e REPOSITORY="${{ inputs.markdown-repo }}" \
+            -e REF="main" \
+            docker.binrepo.vtxdev.net/prodeng-markdown-to-confluence/md2conf-api:latest
+
 
       - name: Publish via API
         run: |
