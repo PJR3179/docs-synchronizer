@@ -56,69 +56,70 @@ class MD2ConfService:
         
         return nodejs_bin_path, npm_bin_path
     
-    def _parse_github_url(self, url: str) -> Tuple[str, str, str, str]:
+    def _parse_github_url(self, url: str) -> Tuple[str, str, str]:
         """
-        Parse a GitHub URL to extract owner, repo, path, and ref.
+        Parse a GitHub URL to extract repo, path, and ref.
+        Owner is hardcoded to "vertexinc".
         
         Handles formats like:
-        - https://github.com/owner/repo/blob/branch/path/to/file.md
-        - https://github.com/owner/repo/tree/branch/path/to/directory
-        - https://raw.githubusercontent.com/owner/repo/branch/path/to/file.md
-        - owner/repo/path/to/file.md (assumes main branch)
+        - https://github.com/vertexinc/repo/blob/branch/path/to/file.md
+        - https://github.com/vertexinc/repo/tree/branch/path/to/directory
+        - https://raw.githubusercontent.com/vertexinc/repo/branch/path/to/file.md
+        - repo/path/to/file.md (assumes main branch)
         
         Returns:
-            Tuple containing (owner, repo, path, ref)
+            Tuple containing (repo, path, ref)
         """
         print(f"Parsing GitHub URL: {url}")
         
-        # Handle simple owner/repo/path format (no http prefix)
+        # Handle simple repo/path format (no http prefix)
         if not url.startswith(("http://", "https://", "github.com", "raw.githubusercontent.com")):
             parts = url.strip("/").split("/")
-            if len(parts) < 3:
-                raise ValueError(f"Invalid GitHub path format: {url}. Expected format: owner/repo/path/to/file.md")
-            return parts[0], parts[1], "/".join(parts[2:]), "main"
+            if len(parts) < 2:
+                raise ValueError(f"Invalid GitHub path format: {url}. Expected format: repo/path/to/file.md")
+            return parts[0], "/".join(parts[1:]), "main"
             
         # Handle raw.githubusercontent.com URLs
         if "raw.githubusercontent.com" in url:
-            # Format: https://raw.githubusercontent.com/owner/repo/branch/path/to/file.md
-            raw_pattern = r"https?://raw\.githubusercontent\.com/([^/]+)/([^/]+)/([^/]+)/(.+)"
+            # Format: https://raw.githubusercontent.com/vertexinc/repo/branch/path/to/file.md
+            raw_pattern = r"https?://raw\.githubusercontent\.com/vertexinc/([^/]+)/([^/]+)/(.+)"
             match = re.match(raw_pattern, url)
             
             if match:
-                owner, repo, ref, path = match.groups()
-                return owner, repo, path, ref
+                repo, ref, path = match.groups()
+                return repo, path, ref
                 
         # Handle github.com URLs with blob or tree
         # Extract components from URL
-        github_pattern = r"https?://(?:www\.)?github\.com/([^/]+)/([^/]+)/(?:blob|tree)/([^/]+)/(.+)"
+        github_pattern = r"https?://(?:www\.)?github\.com/vertexinc/([^/]+)/(?:blob|tree)/([^/]+)/(.+)"
         match = re.match(github_pattern, url)
         
         if match:
-            owner, repo, ref, path = match.groups()
-            return owner, repo, path, ref
+            repo, ref, path = match.groups()
+            return repo, path, ref
             
         # Handle github.com URLs without blob or tree (assume main branch and empty path)
-        simple_pattern = r"https?://(?:www\.)?github\.com/([^/]+)/([^/]+)/?$"
+        simple_pattern = r"https?://(?:www\.)?github\.com/vertexinc/([^/]+)/?$"
         match = re.match(simple_pattern, url)
         
         if match:
-            owner, repo = match.groups()
-            return owner, repo, "", "main"
+            repo = match.group(1)
+            return repo, "", "main"
             
         # If we reach here, none of our patterns matched
         raise ValueError(
             f"Invalid GitHub URL: {url}. Expected formats:\n"
-            "- https://github.com/owner/repo/blob/branch/path/to/file.md\n"
-            "- https://raw.githubusercontent.com/owner/repo/branch/path/to/file.md\n"
-            "- owner/repo/path/to/file.md"
+            "- https://github.com/vertexinc/repo/blob/branch/path/to/file.md\n"
+            "- https://raw.githubusercontent.com/vertexinc/repo/branch/path/to/file.md\n"
+            "- repo/path/to/file.md"
         )
     
-    def _download_github_file(self, owner: str, repo: str, path: str, ref: str, token: Optional[str] = None) -> str:
+    def _download_github_file(self, repo: str, path: str, ref: str, token: Optional[str] = None) -> str:
         """
         Download a file from GitHub repository using raw content URL.
+        Owner is hardcoded to "vertexinc".
         
         Args:
-            owner: GitHub repository owner
             repo: GitHub repository name
             path: Path to the file within the repository
             ref: Branch, tag, or commit SHA
@@ -127,7 +128,7 @@ class MD2ConfService:
         Returns:
             Path to the downloaded file
         """
-        print(f"Downloading file from GitHub: {owner}/{repo}/{path} (ref: {ref})")
+        print(f"Downloading file from GitHub: vertexinc/{repo}/{path} (ref: {ref})")
         
         # Create temp directory if not exists
         if not self.temp_dir:
@@ -148,7 +149,8 @@ class MD2ConfService:
             headers["Authorization"] = f"token {token}"
             
         # Try the raw content URL first (more efficient for larger files)
-        raw_url = f"https://raw.githubusercontent.com/{owner}/{repo}/{ref}/{path}"
+        # Hardcode owner to "vertexinc"
+        raw_url = f"https://raw.githubusercontent.com/vertexinc/{repo}/{ref}/{path}"
         print(f"Attempting to download from raw URL: {raw_url}")
         
         try:
@@ -176,7 +178,8 @@ class MD2ConfService:
             print("Falling back to GitHub API...")
         
         # Fall back to GitHub API
-        api_url = f"https://api.github.com/repos/{owner}/{repo}/contents/{path}?ref={ref}"
+        # Hardcode owner to "vertexinc"
+        api_url = f"https://api.github.com/repos/vertexinc/{repo}/contents/{path}?ref={ref}"
         print(f"Requesting file from GitHub API: {api_url}")
         
         try:
@@ -260,10 +263,10 @@ class MD2ConfService:
         ]):
             print(f"Processing GitHub URL: {markdown_path}")
             try:
-                owner, repo, path, url_ref = self._parse_github_url(markdown_path)
+                repo, path, url_ref = self._parse_github_url(markdown_path)
                 # Use URL ref if provided, otherwise fall back to the passed ref
                 actual_ref = url_ref or ref
-                return self._download_github_file(owner, repo, path, actual_ref, github_token)
+                return self._download_github_file(repo, path, actual_ref, github_token)
             except Exception as e:
                 print(f"Error parsing GitHub URL: {str(e)}")
                 raise ValueError(f"Failed to process GitHub URL: {markdown_path}. Error: {str(e)}")
@@ -272,11 +275,17 @@ class MD2ConfService:
         elif repository:
             print(f"Processing repository reference: {repository} with path: {markdown_path}")
             try:
-                if "/" not in repository:
-                    raise ValueError(f"Invalid repository format: {repository}. Expected format: owner/repo")
+                # Since owner is hardcoded to "vertexinc", we only need the repo name
+                if "/" in repository:
+                    # If format is "vertexinc/repo", extract just the repo part
+                    owner_part, repo = repository.split("/", 1)
+                    if owner_part != "vertexinc":
+                        print(f"Warning: Owner '{owner_part}' will be ignored. Using hardcoded 'vertexinc'.")
+                else:
+                    # If just repo name provided, use it directly
+                    repo = repository
                 
-                owner, repo = repository.split("/", 1)
-                return self._download_github_file(owner, repo, markdown_path, ref, github_token)
+                return self._download_github_file(repo, markdown_path, ref, github_token)
             except Exception as e:
                 print(f"Error processing repository reference: {str(e)}")
                 raise ValueError(f"Failed to process GitHub repository: {repository}. Error: {str(e)}")
