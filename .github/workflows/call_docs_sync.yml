@@ -20,7 +20,7 @@ jobs:
     strategy:
       matrix: ${{ fromJson(needs.generate-matrix.outputs.matrix) }}
       max-parallel: 2
-    uses: ./.github/workflows/shared.yml
+    uses: ./.github/workflows/docs_syncer.yml
     with:
       markdown-path: ${{ matrix.markdown-path }}
       markdown-repo: ${{ matrix.markdown-repo }}
