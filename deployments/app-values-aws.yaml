@@ -1,0 +1,6 @@
+secretStores:
+  onepassword:
+    enabled: true
+    vaults:
+      # github access token
+    # tokenName: 
