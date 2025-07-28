@@ -4,7 +4,8 @@
       "markdown-path": "docs/SETUP.md",
       "markdown-repo": "vertexinc/prodeng-viper-dev/",
       "confluence-space": "PRE",
-      "confluence-root-page": "5687837271" 
+      "confluence-root-page": "5687837271",
+      "job": "md2conf"
     }
   ]
 }

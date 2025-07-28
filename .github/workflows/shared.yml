@@ -13,15 +13,36 @@ on:
       confluence-root-page:
         required: true
         type: string
+      job:
+        required: false
+        type: string
+        default: "md2conf"
+        description: "Job type for processing (e.g., 'md2conf')"
 
 jobs:
   process:
-    runs-on: ${{ inputs.github_runner || 'arc-dind-viper-dev' }}
-    container:
-      image: ${{ vars.AF_DOCKER_HOST }}/prodeng-markdown-to-confluence/md2conf-api:latest
-      credentials:
-        username: ${{ secrets.AF_DOCKER_USER }}
-        password: ${{ secrets.AF_DOCKER_PASS }}
+    runs-on: [self-hosted, standard-shared]
+    steps:
+
+      - name: Artifactory Login
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.AF_DOCKER_HOST }}
+          username: ${{ secrets.AF_DOCKER_USER }}
+          password: ${{ secrets.AF_DOCKER_PASS }}
+
+
+    env:
+      MARKDOWN_PATH: ${{ inputs.markdown-path }}
+      JOB: ${{ inputs.job }}
+      DOMAIN: vertexinc.atlassian.net
+      SPACE: ${{ inputs.confluence-space }}
+      USERNAME: ${{ secrets.ATLASSIAN_USERNAME }}
+      API_KEY: ${{ secrets.ATLASSIAN_TOKEN }}
+      ROOT_PAGE: ${{ inputs.confluence-root-page }}
+      GITHUB_TOKEN: ${{ secrets.GH_API_PAT }}
+      REPOSITORY: ${{ inputs.markdown-repo }}
+      REF: main
     steps:
       - name: Publish via API
         run: |
@@ -29,6 +50,7 @@ jobs:
             -H "Content-Type: application/json" \
             -d '{
               "markdown_path": "${{ inputs.markdown-path }}",
+              "job": "${{ inputs.job }}",
               "domain": "vertexinc.atlassian.net",
               "username": "${{ secrets.ATLASSIAN_USERNAME }}",
               "api_key": "${{ secrets.ATLASSIAN_TOKEN }}",

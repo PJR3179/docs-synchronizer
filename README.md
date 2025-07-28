@@ -137,9 +137,19 @@ export $(grep -v '^#' .env | xargs)
 
 Test the health endpoint:
 
+Check service health:
+
 ```bash
 curl -X GET "http://localhost:8000/health"
 ```
+
+Get supported job types:
+
+```bash
+curl -X GET "http://localhost:8000/jobs"
+```
+
+Publish a markdown file:
 
 Publish a markdown file:
 
@@ -148,6 +158,7 @@ curl -X POST "http://localhost:8000/publish" \
   -H "Content-Type: application/json" \
   -d '{
     "markdown_path": "docs/simple-test.md",
+    "job": "md2conf",
     "domain": "'$CONFLUENCE_DOMAIN'",
     "username": "'$CONFLUENCE_USERNAME'",
     "api_key": "'$CONFLUENCE_API_KEY'",
@@ -161,6 +172,7 @@ curl -X POST "http://localhost:8000/publish" \
   -H "Content-Type: application/json" \
   -d '{
     "markdown_path": "docs/mermaid-test.md",
+    "job": "md2conf",
     "domain": "'$CONFLUENCE_DOMAIN'",
     "username": "'$CONFLUENCE_USERNAME'",
     "api_key": "'$CONFLUENCE_API_KEY'",
@@ -168,6 +180,18 @@ curl -X POST "http://localhost:8000/publish" \
     "root_page": "'$CONFLUENCE_ROOT_PAGE'"
   }'
 ```
+
+**Job Parameter**: The `job` parameter specifies the processing type for the `/publish` endpoint:
+- `"md2conf"`: Process using MD2Conf service for Confluence publishing
+- If omitted, defaults to `"md2conf"` for backward compatibility
+- Invalid job types return an error with list of supported types
+
+**Available Endpoints**:
+- `GET /health` - Health check
+- `GET /jobs` - List supported job types
+- `POST /publish` - Dispatch publishing job based on job type
+
+The `/publish` endpoint acts as a job dispatcher, routing requests to appropriate processing services based on the `job` parameter. This architecture makes it easy to add new processing types in the future.
 
 ### GitHub Action Usage
 
