@@ -202,9 +202,12 @@ test_api() {
         fi
       done
       
+      # Fail fast if container is not ready
       if [[ $container_ready == false ]]; then
-        echo "Warning: Container may not be fully ready after $max_retries attempts."
-        echo "Proceeding with API test anyway..."
+        echo "Error: Container failed to start properly after $max_retries attempts."
+        echo "Please check container logs: docker logs md2conf-api"
+        echo "You can also try: ./docker-run.sh logs"
+        exit 1
       fi
     fi
     
