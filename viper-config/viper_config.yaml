@@ -1,0 +1,85 @@
+---
+# unit test configuration
+unittest:
+  enabled: false # Enable unit test configurations
+  setup_command: 'pip3 install -r requirements.txt' # Install dependencies from requirements.txt
+  build_command: '' # No specific build command needed for Python
+  test_command: 'python3 -m pytest tests/ -v --cov=app --cov-report=xml --cov-report=term' # Run tests with coverage
+  test_report_paths: 'coverage.xml' # Coverage report for SonarQube
+
+snyk:
+  enabled: false
+  org_id: 4b21a8f8-eaae-48ff-b09e-b84d53c56026
+  token_name: "PRODENG_SNYK_TOKEN"
+
+# SonarQube scan configurations
+sonarqube:
+  static_scan_enabled: true
+  continue_on_error: true
+  project_key: prodeng-md-to-confluence
+
+# Super-Linter configurations
+superlinter:
+  enabled: false
+  continue_on_error: true
+  #ADVANCED CONFIGURATION
+  filter_regex_include: '.*src/.*|.*viper-config/.*|.*\.xml'
+  filter_regex_exclude: '.*/node_modules/.*'
+  java_file_name: '' # The java_file_name is a "Checkstyle" specific configuration. If a custom configuration file is to be used, it must be placed in the directory defined in the linter_rules_path parameter.
+  linter_rules_path: ''
+  log_level: "INFO"
+  validate_all_codebase: ''
+  validate_gitleaks: '' # The validate_gitleaks is a "Gitleaks" specific configuration. This config is 'true' by default. Set to 'false' to disable.
+
+test:
+  integration:
+    enabled: false
+    image: "docker.binrepo.vtxdev.net/vcp-integration-testing/vcp-int-testing-framework:1.0.0-amd64"
+    service:
+      name: "viper-deployer-service"
+      url: "http://viper-deployer-service.viper-services-viper-deployer-service-development.svc.cluster.local"
+      port: "80"
+    namespace: "viper-services-viper-deployer-service-development"
+    repo:
+      ref: "main"
+    test:
+      tests_path: "integration-tests"
+
+product:
+  enabled: true
+  name: prodeng-md-to-confluence
+  version: 1.0.0
+  language:
+    name: python # Specify the programming language (example:python, java, node, dotnet, go)
+    version: 3.12 # Specify the language version
+  docker_publish_location: viper
+  artifact_publish_namespace: viper
+
+  platforms: "linux/amd64"
+  image:
+    enabled: true # Enable the product image build
+    name: prodeng-md-to-confluence
+    dockerfile: "Dockerfile"
+    context: "." # defaults to root dir. if none supplied
+
+helm:
+  enabled: false
+  vendor: aws
+
+deploy:
+  enabled: false
+  argocd_project: viper-services
+  argocd:
+    status:
+      enabled: true
+
+  targets:
+    aws:
+      development:
+        target: tools
+        regions:
+          - us-west-2
+      production:
+        target: tools
+        regions:
+          - us-east-2

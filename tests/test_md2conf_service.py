@@ -15,6 +15,7 @@ class TestMD2ConfService:
         self.service = MD2ConfService()
         self.sample_request = MarkdownRequest(
             markdown_path="/path/to/file.md",
+            job="md2conf",
             domain="example.atlassian.net",
             username="user@example.com",
             api_key="api_key_123",
@@ -36,6 +37,7 @@ class TestMD2ConfService:
         """Test parameter validation with missing required fields."""
         incomplete_request = MarkdownRequest(
             markdown_path="/path/to/file.md",
+            job="md2conf",
             domain=None,  # Missing required field
             username=None,  # Missing required field
             api_key=None,  # Missing required field
@@ -81,6 +83,34 @@ class TestMD2ConfService:
         assert response.success is True
         assert "Successfully published" in response.message
         assert response.error is None
+
+    def test_job_parameter_validation(self):
+        """Test that job parameter is properly handled."""
+        # Test with valid job type
+        valid_request = MarkdownRequest(
+            markdown_path="/path/to/file.md",
+            job="md2conf",
+            domain="example.atlassian.net",
+            username="user@example.com",
+            api_key="api_key_123",
+            space="TEST"
+        )
+        
+        # This should not raise an error during validation
+        params = self.service.validate_required_parameters(valid_request)
+        assert params is not None
+        
+        # Test with no job specified (should default to md2conf behavior)
+        no_job_request = MarkdownRequest(
+            markdown_path="/path/to/file.md",
+            domain="example.atlassian.net",
+            username="user@example.com",
+            api_key="api_key_123",
+            space="TEST"
+        )
+        
+        params = self.service.validate_required_parameters(no_job_request)
+        assert params is not None
 
 
 # Example of how to run tests:

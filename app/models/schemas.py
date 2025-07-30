@@ -8,6 +8,7 @@ from typing import Optional
 class MarkdownRequest(BaseModel):
     """Request model for publishing markdown to Confluence."""
     markdown_path: str
+    job: Optional[str] = None           # Job type to determine processing method
     domain: Optional[str] = None
     space: Optional[str] = None
     username: Optional[str] = None

@@ -1,0 +1,5 @@
+envSecret:
+  enabled: true
+
+healthcheck:
+  path: /actuator/health

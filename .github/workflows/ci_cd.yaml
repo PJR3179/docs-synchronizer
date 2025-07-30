@@ -1,0 +1,65 @@
+name: "CI/CD Automation Pipeline"
+description: |
+  This workflow runs the main CI/CD pipeline for your repository, either manually or automatically (see 'on' section below).
+
+  What it does:
+    - Retrieves configuration from viper config, runs unit tests, performs static analysis, and creates a semantic version tag.
+    - Builds and pushes artifacts, Helm charts, and Docker images.
+    - Deploys the application and runs sanity checks and adds observability dashboards
+
+  Usage:
+    - Add this workflow to your repository under `.github/workflows/`
+    - Options:
+      - Automatic:  'push' and 'pull_request' triggers to run automatically on changes or PR merges to your default branch.
+      - Trigger manually from the Actions tab with "Run workflow" as well.
+      - Trigger manually the release from the Actions tab with "Run workflow" as well check mark isRelease i,e is Release true.
+
+  Key inputs you can override:
+    - viper_cli_version: Viper CLI version to use (default: v4.7.0 or from repo/org variable).
+    - version_tag: Version tag for the image (default: empty).
+    - github_runner: GitHub runner to use (default: arc-dind-viper-dev).
+    - is_release: Set to true for release builds (default: false).
+
+  All secrets from this workflow are inherited by the called workflow.
+
+on:
+  workflow_dispatch:   # Allow manual runs only
+    inputs:
+      is_release:
+        description: 'Is Release?'
+        required: false
+        default: false
+        type: boolean
+      github_runner:
+        description: "GitHub runner to use"
+        required: false
+        default: "arc-dind-viper-dev"
+        type: string  
+
+  push:
+    branches:
+      - main          # Trigger on pushes to the main branch
+      - feature/**    # Trigger on pushes to any branch under the 'feature/' prefix
+  pull_request:
+    types:
+      - opened         # Trigger when a pull request is created
+      - reopened       # Trigger when a previously closed pull request is reopened
+      - synchronize    # Trigger when new commits are pushed to an open pull request
+    branches:
+      - main           # Only trigger for pull requests targeting the 'main'/default branch
+
+concurrency:
+  # Ensures only one workflow runs at a time for the main/default_branch branch
+  # Other branches and PRs can run in parallel
+  group: ${{ github.ref == 'refs/heads/main' && 'default_branch' || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: "cicd"
+    uses: vertexinc/prodeng-viper-dev/.github/workflows/viper_build_deploy.yaml@v4.8.0
+    with:
+      viper_cli_version: v4.8.1
+      is_release: ${{ inputs.is_release || false }}
+      github_runner: ${{ inputs.github_runner || 'arc-dind-viper-dev' }}
+    secrets: inherit
