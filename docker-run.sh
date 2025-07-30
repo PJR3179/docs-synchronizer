@@ -1,5 +1,16 @@
 #!/bin/bash
 
+# MD2Conf Docker Helper Script - helps to build and run the MD2Conf API in Docker with Rancher support
+
+set -e
+
+# Check for required environment variables
+RANCHER_URL=${RANCHER_URL:-""}
+RANCHER_ACCESS_KEY=${RANCHER_ACCESS_KEY:-""}
+RANCHER_SECRET_KEY=${RANCHER_SECRET_KEY:-""}
+RANCHER_PROJECT=${RANCHER_PROJECT:-""}
+
+# Functions
 show_help() {
   echo "MD2Conf Docker Helper Script with Rancher Support"
   echo ""
@@ -28,32 +39,6 @@ show_help() {
   echo "  export RANCHER_SECRET_KEY=secretkey456"
   echo "  export RANCHER_PROJECT=default"
   echo "  ./docker-run.sh run"
-  echo ""
-}lps to build and run the MD2Conf API in Docker with Rancher support
-
-set -e
-
-# Check for required environment variables
-RANCHER_URL=${RANCHER_URL:-""}
-RANCHER_ACCESS_KEY=${RANCHER_ACCESS_KEY:-""}
-RANCHER_SECRET_KEY=${RANCHER_SECRET_KEY:-""}
-RANCHER_PROJECT=${RANCHER_PROJECT:-""}
-
-# Functions
-show_help() {
-  echo "MD2Conf Docker Helper Script with Rancher Support"
-  echo ""
-  echo "Usage: $0 [command]"
-  echo ""
-  echo "Commands:"
-  echo "  build       Build the Docker image"
-  echo "  run         Run the container (builds first if needed)"
-  echo "  stop        Stop the running container"
-  echo "  restart     Restart the container"
-  echo "  logs        Show container logs"
-  echo "  shell       Open a shell in the running container"
-  echo "  test        Test the API with a sample request"
-  echo "  help        Show this help message"
   echo ""
 }
 
@@ -191,8 +176,36 @@ test_api() {
     if [[ "$(docker ps -q -f name=md2conf-api 2> /dev/null)" == "" ]]; then
       echo "Container is not running. Starting it..."
       run_container
-      # Wait for container to start
-      sleep 5
+      
+      # Wait for container to start with retry logic
+      echo "Waiting for container to be ready..."
+      max_retries=3
+      retry_count=0
+      container_ready=false
+      
+      while [[ $retry_count -lt $max_retries && $container_ready == false ]]; do
+        retry_count=$((retry_count + 1))
+        echo "Attempt $retry_count of $max_retries: Waiting 5 seconds for container to start..."
+        sleep 5
+        
+        # Check if container is running and responding
+        if [[ "$(docker ps -q -f name=md2conf-api 2> /dev/null)" != "" ]]; then
+          # Test if the health endpoint is responding
+          if curl -s -f http://localhost:8000/health > /dev/null 2>&1; then
+            container_ready=true
+            echo "Container is ready!"
+          else
+            echo "Container is running but not responding to health check yet..."
+          fi
+        else
+          echo "Container not running yet..."
+        fi
+      done
+      
+      if [[ $container_ready == false ]]; then
+        echo "Warning: Container may not be fully ready after $max_retries attempts."
+        echo "Proceeding with API test anyway..."
+      fi
     fi
     
     echo "Testing API health endpoint..."
@@ -262,7 +275,7 @@ run_in_rancher() {
   else
     echo "Creating new md2conf-api deployment..."
     # Create workload with the image
-    REGISTRY_URL=$(echo $RANCHER_URL | sed 's/https:\/\///')
+    REGISTRY_URL=$(echo $RANCHER_URL | sed 's/^https*:\/\///')
     IMAGE_NAME="$REGISTRY_URL/md2conf-api:latest"
     
     rancher kubectl run md2conf-api \
