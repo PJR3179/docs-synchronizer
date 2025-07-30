@@ -51,7 +51,7 @@ build_image() {
     echo "Pushing image to Rancher registry..."
     
     # Login to Rancher private registry if specified
-    REGISTRY_URL=$(echo $RANCHER_URL | sed 's/https:\/\///')
+    REGISTRY_URL=$(echo $RANCHER_URL | sed 's/^https*:\/\///')
     if [[ -n "$REGISTRY_URL" ]]; then
       docker tag md2conf-api $REGISTRY_URL/md2conf-api:latest
       docker login $REGISTRY_URL --username $RANCHER_ACCESS_KEY --password $RANCHER_SECRET_KEY
