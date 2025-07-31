@@ -67,8 +67,8 @@ helm:
   vendor: aws
 
 deploy:
-  enabled: false
-  argocd_project: viper-services
+  enabled: true
+  argocd_project: viper-sandbox
   argocd:
     status:
       enabled: true
