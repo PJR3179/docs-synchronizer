@@ -1,7 +1,7 @@
 gateway:
   enabled: true
   hosts:
-    - prodeng-docs-synchronizer.doh.vtxdev.net
+    - prodeng-docs-synchronizer-dev.doh.vtxdev.net
   routes:
     - name: default-route
       path: /*

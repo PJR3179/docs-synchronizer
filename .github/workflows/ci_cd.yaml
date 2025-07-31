@@ -57,7 +57,9 @@ concurrency:
 jobs:
   deploy:
     name: "cicd"
-    uses: vertexinc/prodeng-viper-dev/.github/workflows/viper_build_deploy.yaml@v4.8.0
+    permissions:
+      contents: write
+    uses: vertexinc/prodeng-viper-dev/.github/workflows/viper_build_deploy.yaml@v4.8.1
     with:
       viper_cli_version: v4.8.1
       is_release: ${{ inputs.is_release || false }}

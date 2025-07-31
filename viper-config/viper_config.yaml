@@ -16,7 +16,7 @@ snyk:
 sonarqube:
   static_scan_enabled: true
   continue_on_error: true
-  project_key: prodeng-md-to-confluence
+  project_key: prodeng-docs-synchronizer
 
 # Super-Linter configurations
 superlinter:
@@ -47,7 +47,7 @@ test:
 
 product:
   enabled: true
-  name: prodeng-md-to-confluence
+  name: prodeng-docs-synchronizer
   version: 1.0.0
   language:
     name: python # Specify the programming language (example:python, java, node, dotnet, go)
@@ -58,16 +58,16 @@ product:
   platforms: "linux/amd64"
   image:
     enabled: true # Enable the product image build
-    name: prodeng-md-to-confluence
+    name: prodeng-docs-synchronizer
     dockerfile: "Dockerfile"
     context: "." # defaults to root dir. if none supplied
 
 helm:
-  enabled: false
+  enabled: true
   vendor: aws
 
 deploy:
-  enabled: false
+  enabled: true
   argocd_project: viper-services
   argocd:
     status:
