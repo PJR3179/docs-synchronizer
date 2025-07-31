@@ -3,4 +3,4 @@ secretStores:
     enabled: true
     vaults:
       "CSE - Cloud Engineering - Cloud Engineering Tools": 1
-    tokenName: CSE - Cloud Engineering - CET Token (RW) 
+    tokenName: "CSE - Cloud Engineering - CET Token (RW)"
