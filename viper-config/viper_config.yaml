@@ -63,7 +63,7 @@ product:
     context: "." # defaults to root dir. if none supplied
 
 helm:
-  enabled: false
+  enabled: true
   vendor: aws
 
 deploy:
