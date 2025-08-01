@@ -15,12 +15,6 @@ app = FastAPI(
 # Include API routes
 app.include_router(router)
 
-# Add health check endpoint
-@app.get("/health")
-async def health_check():
-    """Health check endpoint for Docker and monitoring."""
-    return {"status": "healthy", "service": "md2conf-api"}
-
 # For backwards compatibility, expose the convert_markdown function
 from app.services.md2conf_service import MD2ConfService
 from app.models.schemas import MarkdownRequest
