@@ -31,6 +31,17 @@ def health_check():
         raise HTTPException(status_code=500, detail="Service unhealthy")
 
 
+@router.get("/actuator/health", tags=["Health"])
+def actuator_health_check():
+    """Spring Boot style health check endpoint for Kubernetes probes."""
+    try:
+        # Match Spring Boot actuator format
+        return {"status": "UP"}
+    except Exception as e:
+        # If anything fails, return 500
+        raise HTTPException(status_code=500, detail="Service unhealthy")
+
+
 @router.post("/publish", response_model=MarkdownResponse, tags=["Publishing"])
 def publish_markdown(
     request: MarkdownRequest,
