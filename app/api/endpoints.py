@@ -1,7 +1,7 @@
 """
 API endpoints for the MD to Confluence Converter.
 """
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from app.models.schemas import MarkdownRequest, MarkdownResponse, HealthResponse
 from app.services.md2conf_service import MD2ConfService
 
