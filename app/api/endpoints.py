@@ -20,11 +20,15 @@ def hello_world():
     return {"message": "Hello, World!"}
 
 
-@router.get("/health", response_model=HealthResponse, tags=["Health"])
+@router.get("/health", tags=["Health"])
 def health_check():
-    """Health check endpoint to verify service status."""
-    print("Health check endpoint called.")
-    return HealthResponse(status="Server is running and healthy.")
+    """Simple health check for Kubernetes/ArgoCD."""
+    try:
+        # Basic health check - just return 200 OK
+        return {"status": "healthy", "service": "md2conf-api"}
+    except Exception as e:
+        # If anything fails, return 500
+        raise HTTPException(status_code=500, detail="Service unhealthy")
 
 
 @router.post("/publish", response_model=MarkdownResponse, tags=["Publishing"])
