@@ -14,7 +14,6 @@ class MarkdownRequest(BaseModel):
     username: Optional[str] = None
     api_key: Optional[str] = None
     root_page: Optional[str] = None
-    github_token: Optional[str] = None  # For accessing private repos
     repository: Optional[str] = None    # Format: owner/repo
     ref: str = "main"                   # Branch, tag, or commit SHA
 

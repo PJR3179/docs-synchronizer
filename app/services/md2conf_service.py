@@ -13,6 +13,7 @@ import json
 from pathlib import Path
 from typing import Dict, List, Any, Optional, Tuple
 from app.models.schemas import MarkdownRequest, MarkdownResponse
+from app.config import settings
 
 
 class MD2ConfService:
@@ -241,7 +242,7 @@ class MD2ConfService:
         
         Args:
             markdown_path: Local path or GitHub URL
-            github_token: GitHub Personal Access Token
+            github_token: GitHub Personal Access Token (from environment variables only)
             repository: Repository in format "owner/repo"
             ref: Branch, tag, or commit SHA
             
@@ -309,7 +310,7 @@ class MD2ConfService:
             space = request.space or os.getenv("CONFLUENCE_SPACE")
             root_page = request.root_page or os.getenv("CONFLUENCE_ROOT_PAGE")
             markdown_path = request.markdown_path or os.getenv("GITHUB_MARKDOWN_FILE")
-            github_token = request.github_token or os.getenv("GITHUB_TOKEN")
+            github_token = settings.github_token or os.getenv("GITHUB_TOKEN")
             repository = request.repository or os.getenv("GITHUB_REPOSITORY")
             ref = request.ref or os.getenv("GITHUB_REF", "main")
             
