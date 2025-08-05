@@ -1,30 +1,28 @@
-on:
-  workflow_dispatch:
+name: Call Docs Sync API
 
 jobs:
-  generate-matrix:
+  call-api:
     runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Read matrix JSON
-        id: set-matrix
+      - name: Call Docs Sync API
+        id: api-call
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: "https://argocd-dev.doh.vtxdev.net/applications/prodeng-docs-synchronizer-development-cne-usw2-toolsdev01-blue/publish"
+          method: 'POST'
+          customHeaders: '{"Content-Type": "application/json"}'
+          data: |
+            {
+              "markdown_path": "docs/mermaid-test.md",
+              "domain": "vertexinc.atlassian.net",
+              "username": "Philip.Rubbo@vertexinc.com",
+              "api_key": "ATATT3xFfGF0o8WAOtnsaVL14d-ILdUYarMWRZ-rrJdejsVUVfwW0odeH47bZcu6TMszMn4jbYnJNOg9YWSBMnfM9n2gH6fHdsV6kpk8XHGE6KiOZkdQzBhKIJE7igORaPtMI5kHh-fBpoR7u0bxbT93rhmghJff8gZaXDglRTK_KaH1-MI76CM=7415EA16",
+              "space": "PRE",
+              "root_page": "5687837271"
+            }
+          timeout: 300000
+      
+      - name: Display API Response
         run: |
-          MATRIX=$(jq -c . < matrix.json)
-          echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
-
-  call-shared:
-    needs: generate-matrix
-    strategy:
-      matrix: ${{ fromJson(needs.generate-matrix.outputs.matrix) }}
-      max-parallel: 2
-    uses: ./.github/workflows/docs_syncer.yaml
-    with:
-      markdown-path: ${{ matrix.markdown-path }}
-      markdown-repo: ${{ matrix.markdown-repo }}
-      confluence-space: ${{ matrix.confluence-space }}
-      confluence-root-page: ${{ matrix.confluence-root-page }}
-      job: ${{ matrix.job }}
-    secrets: inherit
+          echo "API Response Status: ${{ steps.api-call.outputs.response }}"
+          echo "API Response Headers: ${{ steps.api-call.outputs.headers }}"
