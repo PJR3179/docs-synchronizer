@@ -19,7 +19,7 @@ jobs:
               "markdown_path": "docs/mermaid-test.md",
               "domain": "vertexinc.atlassian.net",
               "username": "Philip.Rubbo@vertexinc.com",
-              "api_key": "ATATT3xFfGF0o8WAOtnsaVL14d-ILdUYarMWRZ-rrJdejsVUVfwW0odeH47bZcu6TMszMn4jbYnJNOg9YWSBMnfM9n2gH6fHdsV6kpk8XHGE6KiOZkdQzBhKIJE7igORaPtMI5kHh-fBpoR7u0bxbT93rhmghJff8gZaXDglRTK_KaH1-MI76CM=7415EA16",
+              "api_key": ${{ secrets.ATLASSIAN_TOKEN }},
               "space": "PRE",
               "root_page": "5687837271"
             }

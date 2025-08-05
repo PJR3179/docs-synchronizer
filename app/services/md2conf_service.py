@@ -310,7 +310,7 @@ class MD2ConfService:
             space = request.space or os.getenv("CONFLUENCE_SPACE")
             root_page = request.root_page or os.getenv("CONFLUENCE_ROOT_PAGE")
             markdown_path = request.markdown_path or os.getenv("GITHUB_MARKDOWN_FILE")
-            github_token = settings.github_token or os.getenv("GITHUB_TOKEN")
+            github_token = settings.github_token or os.getenv("GITHUB_TOKEN") or os.getenv("gh_token")
             repository = request.repository or os.getenv("GITHUB_REPOSITORY")
             ref = request.ref or os.getenv("GITHUB_REF", "main")
             
