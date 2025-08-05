@@ -1,5 +1,8 @@
 name: Call Docs Sync API
 
+on:
+  workflow_dispatch:
+
 jobs:
   call-api:
     runs-on: ubuntu-latest
