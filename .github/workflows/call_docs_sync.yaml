@@ -11,7 +11,7 @@ jobs:
         id: api-call
         uses: fjogeleit/http-request-action@v1
         with:
-          url: "https://argocd-dev.doh.vtxdev.net/applications/prodeng-docs-synchronizer-development-cne-usw2-toolsdev01-blue/publish"
+          url: "https://prodeng-docs-synchronizer-dev.doh.vtxdev.net/publish"
           method: 'POST'
           customHeaders: '{"Content-Type": "application/json"}'
           data: |
