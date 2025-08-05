@@ -27,6 +27,12 @@ class Settings(BaseSettings):
     
     # GitHub settings
     github_token: Optional[str] = None
+    
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        # Check for alternative environment variable names
+        if not self.github_token:
+            self.github_token = os.getenv("gh_token") or os.getenv("GITHUB_TOKEN")
     github_markdown_file: Optional[str] = None
     
     class Config:
