@@ -85,14 +85,14 @@ run_container() {
   # Check if .env file exists
   if [[ -f .env ]]; then
     echo "Found .env file, using environment variables from it."
-    docker run -d --name md2conf-api -p 8000:8000 --env-file .env -v $(pwd)/docs:/app/docs md2conf-api
+    docker run -d --name md2conf-api -p 8080:8080 --env-file .env -v $(pwd)/docs:/app/docs md2conf-api
   else
     echo "No .env file found. Using default configuration."
     echo "You may need to provide Confluence credentials in API requests."
-    docker run -d --name md2conf-api -p 8000:8000 -v $(pwd)/docs:/app/docs md2conf-api
+    docker run -d --name md2conf-api -p 8080:8080 -v $(pwd)/docs:/app/docs md2conf-api
   fi
   
-  echo "Container started. API available at http://localhost:8000"
+  echo "Container started. API available at http://localhost:8080"
 }
 
 stop_container() {
@@ -191,7 +191,7 @@ test_api() {
         # Check if container is running and responding
         if [[ "$(docker ps -q -f name=md2conf-api 2> /dev/null)" != "" ]]; then
           # Test if the health endpoint is responding
-          if curl -s -f http://localhost:8000/health > /dev/null 2>&1; then
+          if curl -s -f http://localhost:8080/health > /dev/null 2>&1; then
             container_ready=true
             echo "Container is ready!"
           else
@@ -212,7 +212,7 @@ test_api() {
     fi
     
     echo "Testing API health endpoint..."
-    curl -s http://localhost:8000/health | jq .
+    curl -s http://localhost:8080/health | jq .
   fi
 }
 
@@ -283,11 +283,11 @@ run_in_rancher() {
     
     rancher kubectl run md2conf-api \
       --image=$IMAGE_NAME \
-      --port=8000 \
+      --port=8080 \
       $ENV_VARS
       
     # Expose the service
-    rancher kubectl expose deployment md2conf-api --port=8000 --type=ClusterIP
+    rancher kubectl expose deployment md2conf-api --port=8080 --type=ClusterIP
   fi
   
   echo "Deployment to Rancher completed."
@@ -305,7 +305,7 @@ get_rancher_service_url() {
     # Get the service URL
     SERVICE_IP=$(rancher kubectl get service md2conf-api -o jsonpath='{.spec.clusterIP}')
     if [[ -n "$SERVICE_IP" ]]; then
-      echo "http://$SERVICE_IP:8000"
+      echo "http://$SERVICE_IP:8080"
       return 0
     fi
   fi
