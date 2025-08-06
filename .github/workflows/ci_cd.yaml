@@ -55,8 +55,34 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  pre-deploy-logging:
+    name: "Pre-Deploy Logging"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Log Deployment Context
+        run: |
+          echo "🚀 Starting CI/CD Pipeline for ArgoCD Deployment"
+          echo "================================================="
+          echo "Repository: ${{ github.repository }}"
+          echo "Branch/Ref: ${{ github.ref }}"
+          echo "Commit SHA: ${{ github.sha }}"
+          echo "Actor: ${{ github.actor }}"
+          echo "Event: ${{ github.event_name }}"
+          echo "Timestamp: $(date -u)"
+          echo "Is Release: ${{ inputs.is_release || false }}"
+          echo "GitHub Runner: ${{ inputs.github_runner || 'arc-dind-viper-dev' }}"
+          echo "Viper CLI Version: v4.8.1"
+          echo ""
+          echo "🎯 Expected Deployment Targets:"
+          echo "- Application: prodeng-docs-synchronizer"
+          echo "- Environment: development"
+          echo "- Cluster: cne-usw2-toolsdev01-blue"
+          echo "- URL: https://prodeng-docs-synchronizer-dev.doh.vtxdev.net"
+          echo "================================================="
+
   deploy:
     name: "cicd"
+    needs: pre-deploy-logging
     permissions:
       contents: write
     uses: vertexinc/prodeng-viper-dev/.github/workflows/viper_build_deploy.yaml@v4.8.1
@@ -65,3 +91,40 @@ jobs:
       is_release: ${{ inputs.is_release || false }}
       github_runner: ${{ inputs.github_runner || 'arc-dind-viper-dev' }}
     secrets: inherit
+
+  post-deploy-logging:
+    name: "Post-Deploy Status"
+    needs: deploy
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Log Deployment Results
+        run: |
+          echo "📊 Deployment Pipeline Completed"
+          echo "================================="
+          echo "Deployment Status: ${{ needs.deploy.result }}"
+          echo "Completion Time: $(date -u)"
+          echo ""
+          if [ "${{ needs.deploy.result }}" == "success" ]; then
+            echo "✅ Deployment completed successfully!"
+            echo ""
+            echo "🔍 Next Steps:"
+            echo "1. Verify application health at: https://prodeng-docs-synchronizer-dev.doh.vtxdev.net/health"
+            echo "2. Check ArgoCD console for application status"
+            echo "3. Monitor application logs for any issues"
+            echo "4. Test API endpoints functionality"
+          else
+            echo "❌ Deployment failed or was cancelled"
+            echo ""
+            echo "🔍 Troubleshooting Steps:"
+            echo "1. Check the deployment job logs above"
+            echo "2. Review ArgoCD application events"
+            echo "3. Check Kubernetes pod status and logs"
+            echo "4. Verify Docker image build and push"
+          fi
+          echo ""
+          echo "🔗 Useful Links:"
+          echo "- ArgoCD: https://argocd-dev.doh.vtxdev.net"
+          echo "- Application URL: https://prodeng-docs-synchronizer-dev.doh.vtxdev.net"
+          echo "- Health Check: https://prodeng-docs-synchronizer-dev.doh.vtxdev.net/actuator/health"
+          echo "================================="

@@ -7,6 +7,16 @@ jobs:
   call-api:
     runs-on: ubuntu-latest
     steps:
+      - name: Log API Call Details
+        run: |
+          echo "🚀 Starting API call to docs sync service"
+          echo "URL: https://prodeng-docs-synchronizer-dev.doh.vtxdev.net/publish"
+          echo "Method: POST"
+          echo "Timestamp: $(date -u)"
+          echo "Repository: ${{ github.repository }}"
+          echo "Ref: ${{ github.ref }}"
+          echo "Actor: ${{ github.actor }}"
+          
       - name: Call Docs Sync API
         id: api-call
         uses: fjogeleit/http-request-action@v1
@@ -19,13 +29,40 @@ jobs:
               "markdown_path": "docs/mermaid-test.md",
               "domain": "vertexinc.atlassian.net",
               "username": "Philip.Rubbo@vertexinc.com",
-              "api_key": ${{ secrets.ATLASSIAN_TOKEN }},
+              "api_key": "${{ secrets.ATLASSIAN_TOKEN }}",
               "space": "PRE",
               "root_page": "5687837271"
             }
           timeout: 300000
       
-      - name: Display API Response
+      - name: Log API Response Details
         run: |
-          echo "API Response Status: ${{ steps.api-call.outputs.response }}"
-          echo "API Response Headers: ${{ steps.api-call.outputs.headers }}"
+          echo "📊 API Response Analysis:"
+          echo "Response Status: ${{ steps.api-call.outputs.response }}"
+          echo "HTTP Status: ${{ steps.api-call.outputs.status }}"
+          echo "Response Headers: ${{ steps.api-call.outputs.headers }}"
+          echo "Response Time: $(date -u)"
+          echo ""
+          echo "🔍 Debugging Information:"
+          if [ "${{ steps.api-call.outputs.status }}" != "200" ]; then
+            echo "❌ API call failed with status: ${{ steps.api-call.outputs.status }}"
+            echo "Response body: ${{ steps.api-call.outputs.response }}"
+          else
+            echo "✅ API call successful"
+            echo "Response body: ${{ steps.api-call.outputs.response }}"
+          fi
+          
+      - name: ArgoCD Application Status Check
+        if: always()
+        run: |
+          echo "🔍 Checking ArgoCD application status..."
+          echo "Application: prodeng-docs-synchronizer-development-cne-usw2-toolsdev01-blue"
+          echo "Environment: development"
+          echo "Cluster: cne-usw2-toolsdev01-blue"
+          echo "Expected URL: https://prodeng-docs-synchronizer-dev.doh.vtxdev.net"
+          echo ""
+          echo "📋 Next Steps for Debugging:"
+          echo "1. Check ArgoCD console for application health"
+          echo "2. Verify pod logs in Kubernetes"
+          echo "3. Confirm health endpoint accessibility"
+          echo "4. Check service and ingress configuration"
