@@ -407,6 +407,17 @@ class MD2ConfService:
         env = os.environ.copy()
         nodejs_bin_path, npm_bin_path = self._get_node_paths()
         
+        # Add Chrome/Puppeteer environment variables for Docker containers
+        env.update({
+            "TMPDIR": "/app/tmp",
+            "PUPPETEER_CACHE_DIR": "/app/.puppeteer_cache",
+            "PUPPETEER_TMP_DIR": "/app/tmp",
+            "CHROME_NO_SANDBOX": "1",
+            "PUPPETEER_EXECUTABLE_PATH": "/usr/bin/google-chrome",
+            "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD": "true",
+            "CHROME_DEVEL_SANDBOX": "/usr/bin/google-chrome"
+        })
+        
         current_path = env.get("PATH", "")
         paths_to_add = []
         
