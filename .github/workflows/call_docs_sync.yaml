@@ -7,6 +7,16 @@ jobs:
   call-api:
     runs-on: arc-k8s-standard
     steps:
+      - name: Test Health Endpoint First
+        run: |
+          echo "🏥 Testing health endpoint accessibility..."
+          curl -v "https://prodeng-docs-synchronizer-dev.doh.vtxdev.net/health"
+          echo ""
+          echo "🧪 Testing basic connectivity to /publish endpoint..."
+          curl -v -X POST "https://prodeng-docs-synchronizer-dev.doh.vtxdev.net/publish" \
+            -H "Content-Type: application/json" \
+            -d '{"markdown_path": "test"}' || echo "Expected error - testing connectivity only"
+
       - name: Log API Call Details
         run: |
           echo "🚀 Starting API call to docs sync service"
@@ -27,6 +37,8 @@ jobs:
           data: |
             {
               "markdown_path": "docs/mermaid-test.md",
+              "repository": "${{ github.repository }}",
+              "ref": "${{ github.ref }}",
               "domain": "vertexinc.atlassian.net",
               "username": "Philip.Rubbo@vertexinc.com",
               "api_key": "${{ secrets.ATLASSIAN_TOKEN }}",
@@ -34,6 +46,29 @@ jobs:
               "root_page": "5687837271"
             }
           timeout: 300000
+      
+      - name: Debug API Call Outputs
+        if: always()
+        run: |
+          echo "🔍 Raw API Call Debug Information:"
+          echo "outputs.response: '${{ steps.api-call.outputs.response }}'"
+          echo "outputs.status: '${{ steps.api-call.outputs.status }}'"
+          echo "outputs.headers: '${{ steps.api-call.outputs.headers }}'"
+          echo "outputs.data: '${{ steps.api-call.outputs.data }}'"
+          echo ""
+          echo "🧪 Manual curl test with same payload:"
+          curl -v -X POST "https://prodeng-docs-synchronizer-dev.doh.vtxdev.net/publish" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "markdown_path": "docs/mermaid-test.md",
+              "repository": "${{ github.repository }}",
+              "ref": "${{ github.ref }}",
+              "domain": "vertexinc.atlassian.net", 
+              "username": "Philip.Rubbo@vertexinc.com",
+              "api_key": "test-key-redacted",
+              "space": "PRE",
+              "root_page": "5687837271"
+            }' || echo "Curl test completed"
       
       - name: Log API Response Details
         run: |
