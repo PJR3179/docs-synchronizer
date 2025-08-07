@@ -7,15 +7,8 @@ jobs:
   call-api:
     runs-on: arc-k8s-standard
     steps:
-      - name: Test Health Endpoint First
-        run: |
-          echo "🏥 Testing health endpoint accessibility..."
-          curl -v "https://prodeng-docs-synchronizer-dev.doh.vtxdev.net/health"
-          echo ""
-          echo "🧪 Testing basic connectivity to /publish endpoint..."
-          curl -v -X POST "https://prodeng-docs-synchronizer-dev.doh.vtxdev.net/publish" \
-            -H "Content-Type: application/json" \
-            -d '{"markdown_path": "test"}' || echo "Expected error - testing connectivity only"
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
       - name: Log API Call Details
         run: |
