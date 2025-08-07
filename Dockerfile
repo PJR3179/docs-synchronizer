@@ -55,8 +55,19 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Create a non-root user to run the application
-RUN useradd -m appuser && chown -R appuser:appuser /app
+RUN useradd -m appuser && \
+    chown -R appuser:appuser /app && \
+    chmod 755 /tmp && \
+    chown appuser:appuser /tmp
 USER appuser
+
+# Set environment variables for Puppeteer
+ENV PUPPETEER_CACHE_DIR=/app/.puppeteer_cache
+ENV PUPPETEER_TMP_DIR=/app/tmp
+
+# Create writable directories for Puppeteer
+RUN mkdir -p /app/.puppeteer_cache /app/tmp && \
+    chmod 755 /app/.puppeteer_cache /app/tmp
 
 # Expose the port the app will run on
 EXPOSE 8080
@@ -66,4 +77,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
   CMD curl -f http://localhost:8080/actuator/health || exit 1
 
 # Command to run the application
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["sh", "-c", "export TMPDIR=/app/tmp && export PUPPETEER_CACHE_DIR=/app/.puppeteer_cache && uvicorn main:app --host 0.0.0.0 --port 8080"]
