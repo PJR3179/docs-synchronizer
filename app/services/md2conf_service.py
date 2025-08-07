@@ -409,12 +409,13 @@ class MD2ConfService:
         
         # Add Chrome/Puppeteer environment variables for Docker containers
         env.update({
-            "TMPDIR": "/app/tmp",
+            "TMPDIR": "/tmp/puppeteer",
             "PUPPETEER_CACHE_DIR": "/app/.puppeteer_cache",
-            "PUPPETEER_TMP_DIR": "/app/tmp",
+            "PUPPETEER_TMP_DIR": "/tmp/puppeteer",
             "CHROME_NO_SANDBOX": "1",
             "PUPPETEER_EXECUTABLE_PATH": "/usr/bin/google-chrome",
             "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD": "true",
+            "PUPPETEER_ARGS": "--no-sandbox --disable-setuid-sandbox --disable-dev-shm-usage --disable-gpu --no-first-run --no-zygote --single-process",
             "CHROME_DEVEL_SANDBOX": "/usr/bin/google-chrome"
         })
         
