@@ -3,3 +3,14 @@ envSecret:
 
 healthcheck:
   path: /actuator/health
+
+# Configure probe timings to allow for container startup time
+probes:
+  startup:
+    enabled: true
+    path: /actuator/health
+    initialDelaySeconds: 30
+    periodSeconds: 10  
+    timeoutSeconds: 5
+    failureThreshold: 6  # Allow 60 seconds total for startup
+    successThreshold: 1
