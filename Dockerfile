@@ -52,8 +52,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Create directories with proper permissions BEFORE switching users
-RUN mkdir -p /tmp/puppeteer /app/tmp /app/.puppeteer_cache && \
-    chmod 777 /tmp/puppeteer /app/tmp /app/.puppeteer_cache && \
+RUN mkdir -p /tmp/mermaid /app/.puppeteer_cache && \
+    chmod 1777 /tmp/mermaid && \
+    chmod 777 /app/.puppeteer_cache && \
     # Install npm packages as root for proper permissions
     npm install -g @mermaid-js/mermaid-cli && \
     # Create user and set ownership
@@ -64,13 +65,13 @@ RUN mkdir -p /tmp/puppeteer /app/tmp /app/.puppeteer_cache && \
 USER appuser
 
 # Set environment variables for Puppeteer/Chrome
-ENV TMPDIR=/tmp/puppeteer
+ENV TMPDIR=/tmp/mermaid
 ENV PUPPETEER_CACHE_DIR=/app/.puppeteer_cache
-ENV PUPPETEER_TMP_DIR=/tmp/puppeteer
+ENV PUPPETEER_TMP_DIR=/tmp/mermaid
 ENV CHROME_NO_SANDBOX=1
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-ENV PUPPETEER_ARGS="--no-sandbox --disable-setuid-sandbox --disable-dev-shm-usage --disable-gpu --no-first-run --no-zygote --single-process"
+ENV PUPPETEER_ARGS="--no-sandbox --disable-setuid-sandbox --disable-dev-shm-usage --disable-gpu --no-first-run --no-zygote --single-process --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-renderer-backgrounding"
 
 # Expose the port the app will run on
 EXPOSE 8080
