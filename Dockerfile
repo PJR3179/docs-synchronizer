@@ -44,9 +44,6 @@ RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Install mermaid-cli globally
-RUN npm install -g @mermaid-js/mermaid-cli
-
 # Copy requirements file and install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
@@ -54,23 +51,26 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the application code to the container
 COPY . .
 
-# Set environment variables for Puppeteer
-ENV PUPPETEER_CACHE_DIR=/app/.puppeteer_cache
-ENV PUPPETEER_TMP_DIR=/app/tmp
-ENV TMPDIR=/app/tmp
-ENV CHROME_DEVEL_SANDBOX=/usr/bin/google-chrome
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome
-
-# Create a non-root user and writable directories
-RUN useradd -m appuser && \
-    mkdir -p /app/.puppeteer_cache /app/tmp && \
-    chown -R appuser:appuser /app && \
-    chmod -R 755 /app/.puppeteer_cache /app/tmp && \
-    chmod 1777 /tmp
+# Create directories with proper permissions BEFORE switching users
+RUN mkdir -p /tmp/puppeteer /app/tmp /app/.puppeteer_cache && \
+    chmod 777 /tmp/puppeteer /app/tmp /app/.puppeteer_cache && \
+    # Install npm packages as root for proper permissions
+    npm install -g @mermaid-js/mermaid-cli && \
+    # Create user and set ownership
+    useradd -m appuser && \
+    chown -R appuser:appuser /app
 
 # Switch to app user
 USER appuser
+
+# Set environment variables for Puppeteer/Chrome
+ENV TMPDIR=/tmp/puppeteer
+ENV PUPPETEER_CACHE_DIR=/app/.puppeteer_cache
+ENV PUPPETEER_TMP_DIR=/tmp/puppeteer
+ENV CHROME_NO_SANDBOX=1
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV PUPPETEER_ARGS="--no-sandbox --disable-setuid-sandbox --disable-dev-shm-usage --disable-gpu --no-first-run --no-zygote --single-process"
 
 # Expose the port the app will run on
 EXPOSE 8080
@@ -80,4 +80,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
   CMD curl -f http://localhost:8080/actuator/health || exit 1
 
 # Command to run the application
-CMD ["sh", "-c", "export TMPDIR=/app/tmp && export PUPPETEER_CACHE_DIR=/app/.puppeteer_cache && export PUPPETEER_TMP_DIR=/app/tmp && export CHROME_NO_SANDBOX=1 && export PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome && export PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true && export CHROME_DEVEL_SANDBOX=/usr/bin/google-chrome && uvicorn main:app --host 0.0.0.0 --port 8080"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]
