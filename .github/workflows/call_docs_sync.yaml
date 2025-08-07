@@ -29,7 +29,7 @@ jobs:
           customHeaders: '{"Content-Type": "application/json"}'
           data: |
             {
-              "markdown_path": "docs/mermaid-test.md",
+              "markdown_path": "docs/simple-test.md",
               "repository": "prodeng-docs-synchronizer",
               "domain": "vertexinc.atlassian.net",
               "username": "Philip.Rubbo@vertexinc.com",
