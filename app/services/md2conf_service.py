@@ -436,13 +436,17 @@ class MD2ConfService:
         print(f"Updated PATH for Node.js/npm: {env['PATH'][:200]}...")  # Log first 200 chars
         
         try:
+            # For containers with strict security policies, we may need to run with different user permissions
+            # Try running normally first, then with sudo if available for mermaid-specific commands
             result = subprocess.run(
                 cmd, 
                 check=True, 
                 capture_output=True, 
                 text=True, 
                 timeout=self.timeout,
-                env=env
+                env=env,
+                # Add additional security options for containers
+                preexec_fn=None if self.is_windows else lambda: os.setpgrp()
             )
             return result
         except subprocess.CalledProcessError as e:

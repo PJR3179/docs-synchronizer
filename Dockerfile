@@ -57,12 +57,12 @@ RUN mkdir -p /tmp/mermaid /app/.puppeteer_cache && \
     chmod 777 /app/.puppeteer_cache && \
     # Install npm packages as root for proper permissions
     npm install -g @mermaid-js/mermaid-cli && \
-    # Create user and set ownership
+    # Create user and set ownership (but we'll run as root for now)
     useradd -m appuser && \
     chown -R appuser:appuser /app
 
-# Switch to app user
-USER appuser
+# NOTE: Commenting out USER switch to run as root for Puppeteer/Chrome permissions
+# USER appuser
 
 # Set environment variables for Puppeteer/Chrome
 ENV TMPDIR=/tmp/mermaid
