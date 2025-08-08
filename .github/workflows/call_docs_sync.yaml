@@ -5,7 +5,7 @@ on:
 
 jobs:
   call-api:
-    runs-on: arc-k8s-standard
+    runs-on: arc-dind-viper-dev
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
