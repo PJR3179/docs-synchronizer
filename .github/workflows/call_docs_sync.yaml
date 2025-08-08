@@ -35,7 +35,8 @@ jobs:
               "username": "Philip.Rubbo@vertexinc.com",
               "api_key": "${{ secrets.ATLASSIAN_TOKEN }}",
               "space": "PRE",
-              "root_page": "5687837271"
+              "root_page": "5687837271",
+              "job": md2conf
             }
           timeout: 300000
       
