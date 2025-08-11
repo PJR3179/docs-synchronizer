@@ -36,7 +36,7 @@ jobs:
               "api_key": "${{ secrets.ATLASSIAN_TOKEN }}",
               "space": "PRE",
               "root_page": "5687837271",
-              "job": md2conf
+              "job": "md2conf"
             }
           timeout: 300000
       
