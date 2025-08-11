@@ -19,8 +19,28 @@ jobs:
           echo "Repository: ${{ github.repository }}"
           echo "Ref: ${{ github.ref }}"
           echo "Actor: ${{ github.actor }}"
-          
-      - name: Call Docs Sync API
+      
+      - name: Call Docs Sync API - Service Catalogue
+        id: api-call
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: "https://prodeng-docs-synchronizer-dev.doh.vtxdev.net/publish"
+          method: 'POST'
+          customHeaders: '{"Content-Type": "application/json"}'
+          data: |
+            {
+              "markdown_path": "docs/SERVICECATALOGUE.md",
+              "repository": "prodeng-viper-dev",
+              "domain": "vertexinc.atlassian.net",
+              "username": "Philip.Rubbo@vertexinc.com",
+              "api_key": "${{ secrets.ATLASSIAN_TOKEN }}",
+              "space": "PRE",
+              "root_page": "5748228865",
+              "job": "md2conf"
+            }
+          timeout: 300000
+
+      - name: Call Docs Sync API - Mermaid Test
         id: api-call
         uses: fjogeleit/http-request-action@v1
         with:
@@ -56,18 +76,3 @@ jobs:
             echo "✅ API call successful"
             echo "Response body: ${{ steps.api-call.outputs.response }}"
           fi
-          
-      - name: ArgoCD Application Status Check
-        if: always()
-        run: |
-          echo "🔍 Checking ArgoCD application status..."
-          echo "Application: prodeng-docs-synchronizer-development-cne-usw2-toolsdev01-blue"
-          echo "Environment: development"
-          echo "Cluster: cne-usw2-toolsdev01-blue"
-          echo "Expected URL: https://prodeng-docs-synchronizer-dev.doh.vtxdev.net"
-          echo ""
-          echo "📋 Next Steps for Debugging:"
-          echo "1. Check ArgoCD console for application health"
-          echo "2. Verify pod logs in Kubernetes"
-          echo "3. Confirm health endpoint accessibility"
-          echo "4. Check service and ingress configuration"
