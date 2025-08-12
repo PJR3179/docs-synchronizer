@@ -56,7 +56,7 @@ jobs:
               "username": "${{ secrets.ATLASSIAN_USERNAME }}",
               "api_key": "${{ secrets.ATLASSIAN_TOKEN }}",
               "space": "ABC",
-              "root_page": "$5687837271",
+              "root_page": "$12345678",
               "job": "md2conf"
             }
           timeout: 300000
@@ -77,7 +77,7 @@ jobs:
               "username": "${{ secrets.ATLASSIAN_USERNAME }}",
               "api_key": "${{ secrets.ATLASSIAN_TOKEN }}",
               "space": "ABC",
-              "root_page": "$5687837271",
+              "root_page": "$12345678",
               "job": "md2conf"
             }
           timeout: 300000
