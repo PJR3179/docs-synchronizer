@@ -63,17 +63,137 @@ A FastAPI-based web service that automatically publishes Markdown files to Confl
 
 ## 🚀 Quick Start
 
+The easiest way to get started is by integrating the GitHub Actions workflow into your repository to automatically publish your documentation to Confluence.
+
+### Prerequisites
+
+- GitHub repository with markdown documentation
+- Confluence API token with publishing permissions
+- Access to GitHub repository secrets
+
+### 1. Create Confluence API Token
+
+First, create a Confluence API token with the necessary scopes:
+
+1. Go to [Atlassian API Tokens](https://id.atlassian.com/manage-profile/security/api-tokens)
+2. Click **Create API token**
+3. Give it a descriptive name (e.g., "GitHub Docs Sync")
+4. **Important**: Your token needs these scopes for full functionality:
+   - `read:confluence-space.summary`
+   - `read:confluence-content.all` 
+   - `write:confluence-content`
+   - `write:confluence-file`
+   - `write:confluence-props`
+5. Copy the generated token - you'll need it for GitHub Secrets
+
+### 2. Add GitHub Actions Workflow
+
+Copy the example workflow to your repository:
+
+```bash
+# In your repository root
+mkdir -p .github/workflows
+curl -o .github/workflows/docs-sync.yaml https://raw.githubusercontent.com/vertexinc/prodeng-docs-synchronizer/main/.github/workflows/example.yaml
+```
+
+Or manually create `.github/workflows/docs-sync.yaml` with this content:
+
+```yaml
+name: Sync Documentation to Confluence
+
+on:
+  workflow_dispatch:
+    inputs:
+      markdown_path:
+        description: 'Path to the markdown file in this repo'
+        required: true
+      repository:
+        description: 'Repo name (no owner, e.g. my-project)'
+        required: true
+      space:
+        description: 'Confluence space key'
+        required: true
+      root_page:
+        description: 'Confluence root page ID'
+        required: true
+
+jobs:
+  sync-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Health Check
+        run: |
+          echo "Checking health endpoint..."
+          curl -fsS "https://prodeng-docs-synchronizer-dev.doh.vtxdev.net/actuator/health" || exit 1
+
+      - name: Call Docs Sync API
+        id: api-call-2
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: 'https://prodeng-docs-synchronizer-dev.doh.vtxdev.net/publish'
+          method: 'POST'
+          customHeaders: '{"Content-Type":"application/json"}'
+          #Replace with wanted page information, make sure secrets are added!
+          data: |
+            {
+              "markdown_path": "docs/example.md",
+              "repository": "repo-project",
+              "domain": "vertexinc.atlassian.net",
+              "username": "${{ secrets.ATLASSIAN_USERNAME }}",
+              "api_key": "${{ secrets.ATLASSIAN_TOKEN }}",
+              "space": "ABC",
+              "root_page": "$12345678",
+              "job": "md2conf"
+            }
+          timeout: 300000
+```
+
+### 3. Configure GitHub Secrets
+
+Add these secrets to your GitHub repository:
+
+1. Go to your repository **Settings** → **Secrets and variables** → **Actions**
+2. Add the following repository secrets:
+
+   - **`ATLASSIAN_USERNAME`**: Your Confluence email address
+   - **`ATLASSIAN_TOKEN`**: The API token you created in step 1
+
+### 4. Configure Your Documentation
+
+Update your workflow with your specific details:
+
+- **`markdown_path`**: Path to your markdown file (e.g., `docs/api-guide.md`)
+- **`repository`**: Your repository name without owner (e.g., `my-awesome-project`)
+- **`space`**: Your Confluence space key (e.g., `DOCS`, `ENG`, `PROJ`)
+- **`root_page`**: Confluence page ID where docs should be published
+**You can find the space and root_page values in the Confluence Link to your page!**
+
+### 5. Run the Workflow
+
+1. Go to your repository's **Actions** tab
+2. Select **Sync Documentation to Confluence**
+3. Click **Run workflow**
+
+Your markdown documentation will be automatically converted and published to Confluence with proper formatting, diagrams, and structure!
+
+## 🛠️ Local Development Setup
+
+For developers who want to run the service locally or contribute to the project:
+
 ### Prerequisites
 
 - Python 3.8+ 
 - Node.js 16+ and npm
-- Confluence API token
+- Confluence API token (from Quick Start above)
 
 ### 1. Clone and Setup
 
 ```bash
-git clone https://github.com/vertexinc/prodeng-md-to-confluence.git
-cd prodeng-md-to-confluence
+git clone https://github.com/vertexinc/prodeng-docs-synchronizer.git
+cd prodeng-docs-synchronizer
 ```
 
 ### 2. Create Virtual Environment
@@ -91,6 +211,33 @@ pip install -r requirements.txt
 ```bash
 npm install -g @mermaid-js/mermaid-cli
 ```
+
+### 4. Configure Environment
+
+Copy the example environment file and add your Confluence credentials:
+
+```bash
+cp .env.example .env
+# Edit .env with your Confluence details
+```
+
+Required environment variables:
+```bash
+CONFLUENCE_DOMAIN=your-domain.atlassian.net
+CONFLUENCE_USERNAME=your-email@company.com
+CONFLUENCE_API_KEY=your-confluence-api-key
+CONFLUENCE_SPACE=YOUR-SPACE-KEY
+CONFLUENCE_ROOT_PAGE=your-root-page-id
+```
+
+### 5. Start the Service
+
+```bash
+source venv/bin/activate
+uvicorn main:app --host 0.0.0.0 --port 8000
+```
+
+The API will be available at `http://localhost:8000` with interactive docs at `http://localhost:8000/docs`.
 
 ### 4. Configure Environment
 
@@ -150,22 +297,6 @@ curl -X GET "http://localhost:8000/jobs"
 ```
 
 Publish a markdown file:
-
-Publish a markdown file:
-
-```bash
-curl -X POST "http://localhost:8000/publish" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "markdown_path": "docs/simple-test.md",
-    "job": "md2conf",
-    "domain": "'$CONFLUENCE_DOMAIN'",
-    "username": "'$CONFLUENCE_USERNAME'",
-    "api_key": "'$CONFLUENCE_API_KEY'",
-    "space": "'$CONFLUENCE_SPACE'",
-    "root_page": "'$CONFLUENCE_ROOT_PAGE'"
-  }'
-```
 
 ```bash
 curl -X POST "http://localhost:8000/publish" \
