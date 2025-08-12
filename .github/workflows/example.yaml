@@ -61,6 +61,27 @@ jobs:
             }
           timeout: 300000
 
+      - name: Call Docs Sync API
+        id: api-call-2
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: 'https://prodeng-docs-synchronizer-dev.doh.vtxdev.net/publish'
+          method: 'POST'
+          customHeaders: '{"Content-Type":"application/json"}'
+          #Replace with wanted page information, make sure secrets are added!
+          data: |
+            {
+              "markdown_path": "docs/example.md",
+              "repository": "repo-project",
+              "domain": "vertexinc.atlassian.net",
+              "username": "${{ secrets.ATLASSIAN_USERNAME }}",
+              "api_key": "${{ secrets.ATLASSIAN_TOKEN }}",
+              "space": "ABC",
+              "root_page": "$5687837271",
+              "job": "md2conf"
+            }
+          timeout: 300000
+
       - name: Log API Response Details
         run: |
           echo "Status: ${{ steps.api-call.outputs.status }}"
