@@ -1,10 +1,23 @@
 {
   "include": [
-    { 
-      "markdown-path": "docs/SETUP.md",
-      "markdown-repo": "vertexinc/prodeng-viper-dev/",
-      "confluence-space": "PRE",
-      "confluence-root-page": "5687837271",
+    {
+      "name": "mermaid-test",
+      "markdown_path": "docs/mermaid-test.md",
+      "repository": "prodeng-docs-synchronizer",
+      "domain": "vertexinc.atlassian.net",
+      "username": "Philip.Rubbo@vertexinc.com",
+      "space": "PRE",
+      "root_page": "5687837271",
+      "job": "md2conf"
+    },
+    {
+      "name": "simple-test",
+      "markdown_path": "docs/simple-test.md",
+      "repository": "prodeng-docs-synchronizer",
+      "domain": "vertexinc.atlassian.net",
+      "username": "Philip.Rubbo@vertexinc.com",
+      "space": "PRE",
+      "root_page": "5748228865",
       "job": "md2conf"
     }
   ]

@@ -1,0 +1,90 @@
+name: Single Docs Sync API Call
+
+on:
+  workflow_call:
+    inputs:
+      name:
+        description: 'Job name for identification'
+        required: true
+        type: string
+      markdown_path:
+        description: 'Path to the markdown file'
+        required: true
+        type: string
+      repository:
+        description: 'Repository name'
+        required: true
+        type: string
+      domain:
+        description: 'Confluence domain'
+        required: true
+        type: string
+      username:
+        description: 'Confluence username'
+        required: true
+        type: string
+      space:
+        description: 'Confluence space'
+        required: true
+        type: string
+      root_page:
+        description: 'Confluence root page ID'
+        required: true
+        type: string
+      job:
+        description: 'Job type'
+        required: true
+        type: string
+    secrets:
+      ATLASSIAN_TOKEN:
+        description: 'Atlassian API token'
+        required: true
+
+jobs:
+  call-api:
+    runs-on: arc-dind-viper-dev
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Log API Call Details
+        run: |
+          echo "🚀 Starting API call for: ${{ inputs.name }}"
+          echo "URL: https://prodeng-docs-synchronizer-dev.doh.vtxdev.net/publish"
+          echo "Markdown Path: ${{ inputs.markdown_path }}"
+          echo "Repository: ${{ inputs.repository }}"
+          echo "Space: ${{ inputs.space }}"
+          echo "Root Page: ${{ inputs.root_page }}"
+          echo "Timestamp: $(date -u)"
+
+      - name: Call Docs Sync API
+        id: api-call
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: "https://prodeng-docs-synchronizer-dev.doh.vtxdev.net/publish"
+          method: 'POST'
+          customHeaders: '{"Content-Type": "application/json"}'
+          data: |
+            {
+              "markdown_path": "${{ inputs.markdown_path }}",
+              "repository": "${{ inputs.repository }}",
+              "domain": "${{ inputs.domain }}",
+              "username": "${{ inputs.username }}",
+              "api_key": "${{ secrets.ATLASSIAN_TOKEN }}",
+              "space": "${{ inputs.space }}",
+              "root_page": "${{ inputs.root_page }}",
+              "job": "${{ inputs.job }}"
+            }
+          timeout: 300000
+
+      - name: Log API Response Details
+        run: |
+          echo "📊 API Response for ${{ inputs.name }}:"
+          echo "HTTP Status: ${{ steps.api-call.outputs.status }}"
+          echo "Response: ${{ steps.api-call.outputs.response }}"
+          if [ "${{ steps.api-call.outputs.status }}" != "200" ]; then
+            echo "❌ API call failed for ${{ inputs.name }}"
+            exit 1
+          else
+            echo "✅ API call successful for ${{ inputs.name }}"
+          fi

@@ -1,0 +1,62 @@
+name: Matrix Docs Sync API Parser
+
+on:
+  workflow_dispatch:
+
+jobs:
+  load-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Load Matrix from JSON
+        id: set-matrix
+        run: |
+          echo "Loading matrix from matrix.json..."
+          MATRIX=$(cat matrix.json | jq -c '.include')
+          echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
+          echo "Matrix loaded:"
+          echo "$MATRIX" | jq '.'
+
+  call-api-matrix:
+    needs: load-matrix
+    strategy:
+      matrix:
+        include: ${{ fromJson(needs.load-matrix.outputs.matrix) }}
+      fail-fast: false  # Continue other jobs even if one fails
+      max-parallel: 1   # Limit parallel jobs to avoid overwhelming the API
+    
+    uses: ./.github/workflows/single_docs_sync.yaml
+    with:
+      name: ${{ matrix.name }}
+      markdown_path: ${{ matrix.markdown_path }}
+      repository: ${{ matrix.repository }}
+      domain: ${{ matrix.domain }}
+      username: ${{ matrix.username }}
+      space: ${{ matrix.space }}
+      root_page: ${{ matrix.root_page }}
+      job: ${{ matrix.job }}
+    secrets:
+      ATLASSIAN_TOKEN: ${{ secrets.ATLASSIAN_TOKEN }}
+
+  summary:
+    needs: [load-matrix, call-api-matrix]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Job Summary
+        run: |
+          echo "📊 Matrix Docs Sync Summary"
+          echo "=========================="
+          echo "Matrix jobs status: ${{ needs.call-api-matrix.result }}"
+          echo "Total jobs processed: ${{ strategy.job-total }}"
+          echo "Completion time: $(date -u)"
+          
+          if [ "${{ needs.call-api-matrix.result }}" == "success" ]; then
+            echo "✅ All documentation sync jobs completed successfully!"
+          else
+            echo "⚠️ Some documentation sync jobs may have failed. Check individual job logs above."
+          fi
