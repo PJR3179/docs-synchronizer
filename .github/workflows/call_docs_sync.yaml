@@ -41,7 +41,7 @@ jobs:
           timeout: 300000
 
       - name: Call Docs Sync API - Mermaid Test
-        id: api-call
+        id: api-call-2
         uses: fjogeleit/http-request-action@v1
         with:
           url: "https://prodeng-docs-synchronizer-dev.doh.vtxdev.net/publish"
